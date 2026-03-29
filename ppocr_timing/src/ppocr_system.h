@@ -25,23 +25,23 @@ typedef struct {
 
 typedef struct rknn_point_t
 {
-    int x;
-    int y;
+    int x;  ///< X Coordinate
+    int y;  ///< Y Coordinate
 } rknn_point_t;
 
 typedef struct rknn_quad_t
 {
-    rknn_point_t left_top;
-    rknn_point_t right_top;
-    rknn_point_t left_bottom;
-    rknn_point_t right_bottom;
+    rknn_point_t left_top;      // Left top point
+    rknn_point_t right_top;     // Right top point
+    rknn_point_t left_bottom;   // Left bottom point
+    rknn_point_t right_bottom;  // Right bottom point
     float score;
 } rknn_quad_t;
 
 typedef struct {
-    rknn_quad_t box[1000];
-    int count;
-    float inference_time_ms;  // 检测阶段耗时（毫秒）
+    rknn_quad_t box[1000];                             // text location bounding box，(left top/right top/right bottom/left bottom)
+    int count;                                                             // box num
+    float inference_time_ms;                           // 检测阶段耗时（毫秒）
 } ppocr_det_result;
 
 typedef struct ppocr_det_postprocess_params {
@@ -55,15 +55,15 @@ typedef struct ppocr_det_postprocess_params {
 
 typedef struct ppocr_rec_result
 {
-    char str[512];
-    int str_size;
-    float score;
-    float inference_time_ms;  // 识别阶段耗时（毫秒）
+    char str[512];                                                    // text content
+    int str_size;                                                          // text length
+    float score;                                                           // text score
+    float inference_time_ms;                                        // 识别阶段耗时（毫秒）
 } ppocr_rec_result;
 
 typedef struct ppocr_text_recog_result_t
 {
-    rknn_quad_t box;
+    rknn_quad_t box;                                           // text location bounding box，(left top/right top/right bottom/left bottom)
     ppocr_rec_result text;
 } ppocr_text_recog_result_t;
 
@@ -71,12 +71,10 @@ typedef struct ppocr_text_recog_array_result_t
 {
     ppocr_text_recog_result_t text_result[1000];
     int count;
-    float det_time_ms;  // 检测阶段总耗时（毫秒）
-    float rec_time_ms;  // 识别阶段总耗时（毫秒）
+    float total_inference_time_ms;                          // 总耗时（毫秒）
 } ppocr_text_recog_array_result_t;
 
-// 初始化模型，绑定到指定NPU核心
-int init_ppocr_model(const char* model_path, rknn_app_context_t* app_ctx, rknn_core_mask core_mask);
+int init_ppocr_model(const char* model_path, rknn_app_context_t* app_ctx);
 
 int release_ppocr_model(rknn_app_context_t* app_ctx);
 

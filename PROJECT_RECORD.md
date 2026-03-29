@@ -1263,6 +1263,440 @@ cp text_analysis_system ../
 
 ***
 
+## PPOCR耗时统计功能实现
+
+**日期**: 2026-03-29
+
+**目标**: 为PPOCR示例程序添加检测和识别分别耗时统计功能
+
+### 1. 问题分析
+
+RK官方PPOCR示例程序（PPOCR-Det、PPOCR-Rec、PPOCR-System）的C++代码中均未实现耗时统计功能。需要自行添加时间统计代码，用于性能分析和优化。
+
+### 2. 技术方案
+
+#### 2.1 时间统计方法
+
+参考YOLOv8-Pose示例，使用`gettimeofday`实现微秒级时间统计：
+
+```cpp
+#include <sys/time.h>
+
+static inline int64_t getCurrentTimeUs() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000 + tv.tv_usec;
+}
+```
+
+#### 2.2 统计粒度设计
+
+| 阶段 | 统计粒度 | 说明 |
+|------|----------|------|
+| 检测 | 整张图片 | 检测阶段一次性处理整张图片 |
+| 识别 | 按文本框 | 每个检测到的文本框单独统计 |
+
+#### 2.3 数据结构修改
+
+在`ppocr_system.h`中添加耗时字段：
+
+```cpp
+typedef struct ppocr_det_result {
+    rknn_quad_t box[1000];
+    int count;
+    float inference_time_ms;  // 检测阶段耗时（毫秒）
+} ppocr_det_result;
+
+typedef struct ppocr_rec_result {
+    char str[512];
+    int str_size;
+    float score;
+    float inference_time_ms;  // 识别阶段耗时（毫秒）
+} ppocr_rec_result;
+
+typedef struct ppocr_text_recog_array_result_t {
+    ppocr_text_recog_result_t text_result[1000];
+    int count;
+    float total_inference_time_ms;  // 总耗时（毫秒）
+} ppocr_text_recog_array_result_t;
+```
+
+### 3. 关键代码实现
+
+#### 3.1 检测阶段耗时统计
+
+```cpp
+int inference_ppocr_det_model(...) {
+    int64_t start_time = getCurrentTimeUs();
+    
+    // 预处理 + NPU推理 + 后处理
+    ...
+    
+    int64_t end_time = getCurrentTimeUs();
+    out_result->inference_time_ms = (end_time - start_time) / 1000.0f;
+    return ret;
+}
+```
+
+#### 3.2 识别阶段耗时统计
+
+```cpp
+int inference_ppocr_rec_model(...) {
+    int64_t start_time = getCurrentTimeUs();
+    
+    // 预处理 + NPU推理 + 后处理
+    ...
+    
+    int64_t end_time = getCurrentTimeUs();
+    out_result->inference_time_ms = (end_time - start_time) / 1000.0f;
+    return ret;
+}
+```
+
+#### 3.3 系统级耗时统计与输出
+
+```cpp
+int inference_ppocr_system_model(...) {
+    int64_t system_start_time = getCurrentTimeUs();
+    
+    // 检测阶段
+    ppocr_det_result det_results;
+    inference_ppocr_det_model(..., &det_results);
+    printf("[PPOCR Timing] Detection: %.2f ms\n", det_results.inference_time_ms);
+    
+    // 识别阶段（逐个文本框）
+    float total_rec_time = 0.0f;
+    for (int i=0; i < boxes_result.size(); i++) {
+        ppocr_rec_result text_result;
+        inference_ppocr_rec_model(..., &text_result);
+        printf("[PPOCR Timing] Recognition[%d]: %.2f ms (text: %s)\n", 
+               i, text_result.inference_time_ms, text_result.str);
+        total_rec_time += text_result.inference_time_ms;
+    }
+    
+    // 汇总输出
+    printf("[PPOCR Timing] Total Recognition: %.2f ms (avg: %.2f ms per box, %d boxes)\n", 
+           total_rec_time, total_rec_time / out_result->count, out_result->count);
+    printf("[PPOCR Timing] Total: %.2f ms\n", out_result->total_inference_time_ms);
+}
+```
+
+### 4. 工程结构
+
+```
+ppocr_timing/
+├── src/
+│   ├── ppocr_system.h      # 修改后的头文件（添加耗时字段）
+│   ├── ppocr_system.cc     # 修改后的实现（添加耗时统计）
+│   ├── postprocess.cc      # DBNet后处理/CTC解码
+│   ├── clipper.cc/h        # 多边形裁剪库
+│   ├── dict.h              # 字典定义
+│   └── main.cc             # 主程序入口
+├── include/
+│   └── common.h            # 公共头文件
+├── model/
+│   └── test.jpg            # 测试图片
+├── build/
+│   └── ppocr_timing        # 编译生成的可执行文件
+└── CMakeLists.txt          # 编译配置
+```
+
+### 5. 编译与运行
+
+#### 5.1 编译命令
+
+```bash
+cd /home/linaro/traffic_text_analysis_system/ppocr_timing/build
+rm -rf *
+cmake ..
+make -j4
+```
+
+#### 5.2 运行命令
+
+```bash
+export LD_LIBRARY_PATH=/home/linaro/traffic_text_analysis_system/rknn_model_zoo/install/rk3588_linux_aarch64/rknn_PPOCR-System_demo/lib:$LD_LIBRARY_PATH
+
+./ppocr_timing \
+    ../model/ppocrv4_det_i8.rknn \
+    ../model/ppocrv4_rec_fp16.rknn \
+    ../../rknn_model_zoo/install/rk3588_linux_aarch64/rknn_PPOCR-System_demo/model/ppocr_keys_v1.txt \
+    ../model/test.jpg
+```
+
+### 6. 运行结果
+
+```
+========================================
+[PPOCR Timing] Detection: 41.16 ms
+========================================
+
+[PPOCR Timing] Recognition Results:
+----------------------------------------
+[PPOCR Timing] Recognition[0]: 25.60 ms (text: 纯臻营养护发素)
+[PPOCR Timing] Recognition[1]: 27.27 ms (text: 产品信息/参数)
+[PPOCR Timing] Recognition[2]: 27.68 ms (text: （45元/每公斤，100公斤起订）)
+[PPOCR Timing] Recognition[3]: 28.36 ms (text: 每瓶22元，1000瓶起订）)
+[PPOCR Timing] Recognition[4]: 28.74 ms (text: 【品牌】：代加工方式/OEMODM)
+[PPOCR Timing] Recognition[5]: 31.04 ms (text: 【品名】：纯臻营养护发素)
+[PPOCR Timing] Recognition[6]: 32.88 ms (text: 【产品编号】：YM-X-3011)
+[PPOCR Timing] Recognition[7]: 32.21 ms (text: ODMOEM)
+[PPOCR Timing] Recognition[8]: 32.42 ms (text: 【净含量】：220ml)
+[PPOCR Timing] Recognition[9]: 32.44 ms (text: 【适用人群】：适合所有肤质)
+[PPOCR Timing] Recognition[10]: 31.34 ms (text: 【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚)
+[PPOCR Timing] Recognition[11]: 31.86 ms (text: 糖、椰油酰胺丙基甜菜碱、泛酸)
+[PPOCR Timing] Recognition[12]: 29.68 ms (text: （成品包材）)
+[PPOCR Timing] Recognition[13]: 28.37 ms (text: 【主要功能】：可紧致头发磷层，从而达到)
+[PPOCR Timing] Recognition[14]: 28.90 ms (text: 即时持久改善头发光泽的效果，给干燥的头)
+[PPOCR Timing] Recognition[15]: 31.89 ms (text: 发足够的滋养)
+----------------------------------------
+[PPOCR Timing] Total Recognition: 480.67 ms (avg: 30.04 ms per box, 16 boxes)
+
+========================================
+[PPOCR Timing] Total: 535.97 ms
+========================================
+```
+
+### 7. 性能分析
+
+| 指标 | 数值 | 说明 |
+|------|------|------|
+| 检测阶段 | 41.16 ms | 包含预处理、NPU推理、后处理 |
+| 单个文本框识别 | 25.60-32.88 ms | 平均约30ms |
+| 识别阶段总计 | 480.67 ms | 16个文本框 |
+| 总耗时 | 535.97 ms | 检测+识别 |
+| 识别平均耗时 | 30.04 ms/box | 总识别时间/文本框数 |
+
+**结论**:
+- 检测阶段耗时约41ms，在合理范围内
+- 单个文本框识别耗时约25-33ms，平均30ms
+- 识别阶段总耗时与文本框数量成正比
+- 时间统计精度达到微秒级
+
+### 8. 关键决策
+
+1. **时间统计方法**: 使用`gettimeofday`实现微秒级精度，参考YOLOv8-Pose示例
+2. **统计粒度**: 检测阶段按整张图片统计，识别阶段按文本框统计
+3. **输出格式**: 统一使用`[PPOCR Timing]`前缀，便于日志过滤和分析
+4. **代码结构**: 在原有函数内添加时间统计，保持接口兼容性
+
+### 9. 问题解决
+
+#### 问题1: goto语句跨越变量初始化
+
+**现象**: 编译错误`jump to label 'out' crosses initialization of 'int64_t end_time'`
+
+**解决**: 将变量声明移到函数开头，避免goto跨越变量初始化
+
+```cpp
+// 修改前（错误）
+goto out;
+int64_t end_time = getCurrentTimeUs();  // 错误：跨越初始化
+
+// 修改后（正确）
+int64_t start_time, end_time;  // 声明在开头
+goto out;
+end_time = getCurrentTimeUs();  // 赋值
+```
+
+#### 问题2: 缺少依赖库
+
+**现象**: 链接错误，找不到`fileutils`、`imageutils`等库
+
+**解决**: 在CMakeLists.txt中添加rknn_model_zoo的utils和3rdparty子目录
+
+```cmake
+add_subdirectory(${RKNN_ROOT}/3rdparty 3rdparty.out)
+add_subdirectory(${RKNN_ROOT}/utils utils.out)
+```
+
+***
+
+## PPOCR准确耗时统计功能集成记录
+
+**日期**: 2026-03-29  
+**目标**: 将ppocr_timing项目中实现的准确耗时统计功能集成到文本分析系统中，替代原有的估计值
+
+### 1. 问题背景
+
+原有实现使用估计值填充OCR耗时：
+```cpp
+// ocr_engine.cpp 原有实现
+result.perf_stats.det_time_ms = total_time_ms * 0.3f;  // 估计检测占30%
+result.perf_stats.rec_time_ms = total_time_ms * 0.6f;  // 估计识别占60%
+```
+
+根据ppocr_timing项目（PROJECT_RECORD.md#L1270-1522）的开发记录，已实现基于`gettimeofday`的准确耗时统计，需要将该功能集成到文本分析系统。
+
+### 2. 修改内容
+
+#### 2.1 修改ppocr_system.h添加耗时字段
+
+**文件**: `text_analysis_system/include/ppocr_system.h`
+
+```cpp
+// 检测结果结构体添加耗时字段
+typedef struct {
+    rknn_quad_t box[1000];
+    int count;
+    float inference_time_ms;  // 检测阶段耗时（毫秒）
+} ppocr_det_result;
+
+// 识别结果结构体添加耗时字段
+typedef struct ppocr_rec_result
+{
+    char str[512];
+    int str_size;
+    float score;
+    float inference_time_ms;  // 识别阶段耗时（毫秒）
+} ppocr_rec_result;
+
+// 系统级结果结构体添加耗时字段
+typedef struct ppocr_text_recog_array_result_t
+{
+    ppocr_text_recog_result_t text_result[1000];
+    int count;
+    float det_time_ms;  // 检测阶段总耗时（毫秒）
+    float rec_time_ms;  // 识别阶段总耗时（毫秒）
+} ppocr_text_recog_array_result_t;
+```
+
+#### 2.2 修改ppocr_system_npu2.cc实现准确计时
+
+**文件**: `text_analysis_system/src/ppocr_system_npu2.cc`
+
+**添加时间辅助函数**:
+```cpp
+#include <sys/time.h>
+
+// 获取当前时间（微秒）
+static inline int64_t getCurrentTimeUs()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000 + tv.tv_usec;
+}
+```
+
+**检测阶段计时** (`inference_ppocr_det_model`函数):
+```cpp
+int inference_ppocr_det_model(...)
+{
+    int64_t start_time, end_time;
+    out_result->inference_time_ms = 0;
+    
+    // 记录检测阶段开始时间
+    start_time = getCurrentTimeUs();
+    
+    // ... 原有检测逻辑 ...
+    
+    // 计算检测阶段耗时
+    end_time = getCurrentTimeUs();
+    out_result->inference_time_ms = (end_time - start_time) / 1000.0f;
+    printf("[PPOCR Timing] Detection: %.2f ms\n", out_result->inference_time_ms);
+}
+```
+
+**识别阶段计时** (`inference_ppocr_rec_model`函数):
+```cpp
+int inference_ppocr_rec_model(...)
+{
+    int64_t start_time, end_time;
+    out_result->inference_time_ms = 0;
+    
+    // 记录识别阶段开始时间
+    start_time = getCurrentTimeUs();
+    
+    // ... 原有识别逻辑 ...
+    
+    // 计算识别阶段耗时
+    end_time = getCurrentTimeUs();
+    out_result->inference_time_ms = (end_time - start_time) / 1000.0f;
+}
+```
+
+**系统级计时汇总** (`inference_ppocr_system_model`函数):
+```cpp
+int inference_ppocr_system_model(...)
+{
+    float total_rec_time = 0.0f;
+    
+    // 初始化耗时统计
+    out_result->det_time_ms = 0.0f;
+    out_result->rec_time_ms = 0.0f;
+    
+    // 检测阶段
+    ppocr_det_result det_results;
+    ret = inference_ppocr_det_model(..., &det_results);
+    out_result->det_time_ms = det_results.inference_time_ms;
+    
+    // 识别阶段 - 逐个文本框识别并累加耗时
+    for (int i=0; i < boxes_result.size(); i++) {
+        ppocr_rec_result text_result;
+        ret = inference_ppocr_rec_model(..., &text_result);
+        
+        // 累加识别耗时
+        total_rec_time += text_result.inference_time_ms;
+        
+        // ... 保存结果 ...
+    }
+    
+    // 保存识别阶段总耗时
+    out_result->rec_time_ms = total_rec_time;
+    printf("[PPOCR Timing] Total Recognition: %.2f ms (avg: %.2f ms per box, %d boxes)\n",
+           total_rec_time, total_rec_time / boxes_result.size(), (int)boxes_result.size());
+}
+```
+
+#### 2.3 修改ocr_engine.cpp使用实际耗时
+
+**文件**: `text_analysis_system/src/ocr_engine.cpp`
+
+```cpp
+// 修改前（使用估计值）
+result.perf_stats.det_time_ms = total_time_ms * 0.3f;
+result.perf_stats.rec_time_ms = total_time_ms * 0.6f;
+
+// 修改后（使用实际测量值）
+result.perf_stats.det_time_ms = ppocr_result.det_time_ms;
+result.perf_stats.rec_time_ms = ppocr_result.rec_time_ms;
+```
+
+### 3. 编译验证
+
+```bash
+cd /home/linaro/traffic_text_analysis_system/text_analysis_system/build
+make -j4
+```
+
+**结果**: 编译成功，无错误
+
+### 4. 预期输出
+
+运行时将输出准确的耗时统计：
+```
+[PPOCR Timing] Detection: 45.23 ms
+[PPOCR Timing] Total Recognition: 312.56 ms (avg: 26.05 ms per box, 12 boxes)
+[OCREngine] OCR识别成功: image.jpg, 识别到 12 个文本, 总耗时: 412.34 ms
+```
+
+### 5. 关键决策
+
+1. **计时方法**: 使用`gettimeofday`实现微秒级精度，与ppocr_timing项目保持一致
+2. **统计粒度**: 
+   - 检测阶段：整张图片统计一次
+   - 识别阶段：每个文本框单独统计，最后汇总
+3. **数据流**: 通过结构体字段传递耗时数据，避免全局变量
+4. **向后兼容**: 新增字段不影响原有接口，保持兼容性
+
+### 6. 参考文档
+
+- PPOCR耗时统计分析计划: `.trae/documents/PPOCR_Timing_Analysis_Plan.md`
+- ppocr_timing项目记录: `PROJECT_RECORD.md#L1270-1522`
+- 本功能Spec: `.trae/specs/ppocr-timing-integration/`
+
+***
+
 **记录创建时间**: 2026-03-28  
-**最后更新**: 2026-03-29  
+**最后更新**: 2026-03-29（添加PPOCR准确耗时统计功能集成记录）  
 **记录维护**: 每次会话后更新

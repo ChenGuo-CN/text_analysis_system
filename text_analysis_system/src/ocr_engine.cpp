@@ -129,10 +129,9 @@ int OCREngine::recognize(const std::string& image_path,
     // 转换结果
     convertResult(ppocr_result, image_path, result);
     result.success = true;
-    // 暂时使用总耗时作为检测和识别的估计值
-    // 实际应用中可以通过修改ppocr_system_npu2.cc来分别计时
-    result.perf_stats.det_time_ms = total_time_ms * 0.3f;  // 估计检测占30%
-    result.perf_stats.rec_time_ms = total_time_ms * 0.6f;  // 估计识别占60%
+    // 使用实际测量的耗时数据（由ppocr_system_npu2.cc提供）
+    result.perf_stats.det_time_ms = ppocr_result.det_time_ms;
+    result.perf_stats.rec_time_ms = ppocr_result.rec_time_ms;
     result.perf_stats.total_time_ms = total_time_ms;
 
     printf("[OCREngine] OCR识别成功: %s, 识别到 %zu 个文本, 总耗时: %.2f ms\n",

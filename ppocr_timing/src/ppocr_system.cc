@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <chrono>
 #include <vector>
-#include <algorithm>
 #include <sys/time.h>
 
 #include "opencv2/opencv.hpp"
@@ -52,6 +50,7 @@ void SortBoxes(std::vector<std::array<int, 8>>* boxes)
             }
         }
     }
+
 }
 
 cv::Mat GetRotateCropImage(const cv::Mat& srcimage, const std::array<int, 8>& box)
@@ -125,8 +124,7 @@ static void dump_tensor_attr(rknn_tensor_attr* attr)
             get_qnt_type_string(attr->qnt_type), attr->zp, attr->scale);
 }
 
-// 带NPU核心绑定的模型初始化
-int init_ppocr_model(const char* model_path, rknn_app_context_t* app_ctx, rknn_core_mask core_mask)
+int init_ppocr_model(const char* model_path, rknn_app_context_t* app_ctx)
 {
     int ret;
     int model_len = 0;
@@ -146,15 +144,6 @@ int init_ppocr_model(const char* model_path, rknn_app_context_t* app_ctx, rknn_c
         printf("rknn_init fail! ret=%d\n", ret);
         return -1;
     }
-
-    // 设置NPU核心绑定 - 这是关键修改
-    ret = rknn_set_core_mask(ctx, core_mask);
-    if (ret != RKNN_SUCC) {
-        printf("rknn_set_core_mask fail! ret=%d\n", ret);
-        rknn_destroy(ctx);
-        return -1;
-    }
-    printf("[NPU Core] Model %s bound to core mask: %d\n", model_path, core_mask);
 
     // Get Model Input Output Number
     rknn_input_output_num io_num;
@@ -246,7 +235,6 @@ int inference_ppocr_det_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     memset(&img, 0, sizeof(image_buffer_t));
     memset(inputs, 0, sizeof(inputs));
     memset(outputs, 0, sizeof(outputs));
-    out_result->inference_time_ms = 0;
 
     // 记录检测阶段开始时间
     start_time = getCurrentTimeUs();
@@ -265,6 +253,7 @@ int inference_ppocr_det_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = convert_image(src_img, &img, NULL, NULL, 0);
     if (ret < 0) {
         printf("convert_image fail! ret=%d\n", ret);
+        free(img.virt_addr);
         return -1;
     }
 
@@ -281,6 +270,7 @@ int inference_ppocr_det_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = rknn_inputs_set(app_ctx->rknn_ctx, 1, inputs);
     if (ret < 0) {
         printf("rknn_input_set fail! ret=%d\n", ret);
+        free(img.virt_addr);
         return -1;
     }
 
@@ -288,6 +278,7 @@ int inference_ppocr_det_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = rknn_run(app_ctx->rknn_ctx, nullptr);
     if (ret < 0) {
         printf("rknn_run fail! ret=%d\n", ret);
+        free(img.virt_addr);
         return -1;
     }
 
@@ -296,24 +287,23 @@ int inference_ppocr_det_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = rknn_outputs_get(app_ctx->rknn_ctx, 1, outputs, NULL);
     if (ret < 0) {
         printf("rknn_outputs_get fail! ret=%d\n", ret);
-        goto out;
+        free(img.virt_addr);
+        return -1;
     }
 
     // Post Process
-    ret = dbnet_postprocess((float*)outputs[0].buf, app_ctx->model_width, app_ctx->model_height,
-                                                params->threshold, params->box_threshold, params->use_dilate, params->db_score_mode,
+    ret = dbnet_postprocess((float*)outputs[0].buf, app_ctx->model_width, app_ctx->model_height, 
+                                                params->threshold, params->box_threshold, params->use_dilate, params->db_score_mode, 
                                                 params->db_unclip_ratio, params->db_box_type,
                                                 scale_w, scale_h, out_result);
-
+    
     // Remeber to release rknn output
     rknn_outputs_release(app_ctx->rknn_ctx, 1, outputs);
 
-    // 计算检测阶段耗时
+    // 计算并记录检测阶段耗时
     end_time = getCurrentTimeUs();
     out_result->inference_time_ms = (end_time - start_time) / 1000.0f;
-    printf("[PPOCR Timing] Detection: %.2f ms\n", out_result->inference_time_ms);
 
-out:
     if (img.virt_addr != NULL) {
         free(img.virt_addr);
     }
@@ -330,7 +320,6 @@ int inference_ppocr_rec_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
 
     memset(inputs, 0, sizeof(inputs));
     memset(outputs, 0, sizeof(outputs));
-    out_result->inference_time_ms = 0;
 
     // 记录识别阶段开始时间
     start_time = getCurrentTimeUs();
@@ -351,7 +340,7 @@ int inference_ppocr_rec_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     img_M.convertTo(img_M, CV_32FC3);
     img_M = (img_M - 127.5)/127.5;
     if (resized_w < imgW) {
-        cv::copyMakeBorder(img_M, img_M, 0, 0, 0, imgW- resized_w, cv::BORDER_CONSTANT, 0);
+        copyMakeBorder(img_M, img_M, 0, 0, 0, imgW- resized_w, cv::BORDER_CONSTANT, 0);
     }
 
     // Set Input Data
@@ -365,6 +354,7 @@ int inference_ppocr_rec_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = rknn_inputs_set(app_ctx->rknn_ctx, 1, inputs);
     if (ret < 0) {
         printf("rknn_input_set fail! ret=%d\n", ret);
+        free(inputs[0].buf);
         return -1;
     }
 
@@ -372,6 +362,7 @@ int inference_ppocr_rec_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = rknn_run(app_ctx->rknn_ctx, nullptr);
     if (ret < 0) {
         printf("rknn_run fail! ret=%d\n", ret);
+        free(inputs[0].buf);
         return -1;
     }
 
@@ -381,20 +372,20 @@ int inference_ppocr_rec_model(rknn_app_context_t* app_ctx, image_buffer_t* src_i
     ret = rknn_outputs_get(app_ctx->rknn_ctx, 1, outputs, NULL);
     if (ret < 0) {
         printf("rknn_outputs_get fail! ret=%d\n", ret);
-        goto out;
+        free(inputs[0].buf);
+        return -1;
     }
 
     // Post Process
     ret = rec_postprocess((float*)outputs[0].buf, MODEL_OUT_CHANNEL, out_len_seq, out_result);
-
+    
     // Remeber to release rknn output
     rknn_outputs_release(app_ctx->rknn_ctx, 1, outputs);
 
-    // 计算识别阶段耗时
+    // 计算并记录识别阶段耗时
     end_time = getCurrentTimeUs();
     out_result->inference_time_ms = (end_time - start_time) / 1000.0f;
 
-out:
     if (inputs[0].buf != NULL) {
         free(inputs[0].buf);
     }
@@ -405,12 +396,10 @@ out:
 int inference_ppocr_system_model(ppocr_system_app_context* sys_app_ctx, image_buffer_t* src_img, ppocr_det_postprocess_params* params, ppocr_text_recog_array_result_t* out_result)
 {
     int ret;
-    float total_rec_time = 0.0f;
-
-    // 初始化耗时统计
-    out_result->det_time_ms = 0.0f;
-    out_result->rec_time_ms = 0.0f;
-
+    
+    // 记录整个系统开始时间
+    int64_t system_start_time = getCurrentTimeUs();
+    
     // Detect Text
     ppocr_det_result det_results;
     ret = inference_ppocr_det_model(&sys_app_ctx->det_context, src_img, params, &det_results);
@@ -419,12 +408,16 @@ int inference_ppocr_system_model(ppocr_system_app_context* sys_app_ctx, image_bu
         return -1;
     }
 
-    // 保存检测阶段耗时
-    out_result->det_time_ms = det_results.inference_time_ms;
+    // 输出检测阶段耗时
+    printf("\n========================================\n");
+    printf("[PPOCR Timing] Detection: %.2f ms\n", det_results.inference_time_ms);
+    printf("========================================\n");
 
     // Recogize Text
     out_result->count = 0;
-    if (det_results.count == 0) {
+    if (det_results.count == 0) {           // detect nothing
+        printf("[PPOCR Timing] No text detected!\n");
+        out_result->total_inference_time_ms = det_results.inference_time_ms;
         return 0;
     }
 
@@ -443,10 +436,14 @@ int inference_ppocr_system_model(ppocr_system_app_context* sys_app_ctx, image_bu
         boxes_result.emplace_back(new_box);
     }
 
-    // Sort text boxes
+    // Sort text boxes in order from top to bottom, left to right for speeding up
     SortBoxes(&boxes_result);
 
     // text recognize
+    float total_rec_time = 0.0f;
+    printf("\n[PPOCR Timing] Recognition Results:\n");
+    printf("----------------------------------------\n");
+    
     for (int i=0; i < boxes_result.size(); i++) {
         cv::Mat in_image = cv::Mat(src_img->height, src_img->width, CV_8UC3,(uint8_t*)src_img->virt_addr);
         cv::Mat crop_image = GetRotateCropImage(in_image, boxes_result[i]);
@@ -468,19 +465,21 @@ int inference_ppocr_system_model(ppocr_system_app_context* sys_app_ctx, image_bu
         ret = inference_ppocr_rec_model(&sys_app_ctx->rec_context, &text_img, &text_result);
         if (ret != 0) {
             printf("inference_ppocr_rec_model fail! ret=%d\n", ret);
-            free(text_img.virt_addr);
             return -1;
         }
         if (text_img.virt_addr != NULL) {
             free(text_img.virt_addr);
         }
 
-        // 累加识别耗时
-        total_rec_time += text_result.inference_time_ms;
-
         if (text_result.score < TEXT_SCORE) {
             continue;
         }
+        
+        // 输出每个文本框的识别耗时
+        printf("[PPOCR Timing] Recognition[%d]: %.2f ms (text: %s)\n", 
+               out_result->count, text_result.inference_time_ms, text_result.str);
+        total_rec_time += text_result.inference_time_ms;
+        
         out_result->text_result[out_result->count].box.left_top.x = boxes_result[i][0];
         out_result->text_result[out_result->count].box.left_top.y = boxes_result[i][1];
         out_result->text_result[out_result->count].box.right_top.x = boxes_result[i][2];
@@ -493,10 +492,17 @@ int inference_ppocr_system_model(ppocr_system_app_context* sys_app_ctx, image_bu
         out_result->count ++;
     }
 
-    // 保存识别阶段总耗时
-    out_result->rec_time_ms = total_rec_time;
-    printf("[PPOCR Timing] Total Recognition: %.2f ms (avg: %.2f ms per box, %d boxes)\n",
-           total_rec_time, total_rec_time / boxes_result.size(), (int)boxes_result.size());
+    // 计算总耗时
+    int64_t system_end_time = getCurrentTimeUs();
+    out_result->total_inference_time_ms = (system_end_time - system_start_time) / 1000.0f;
+    
+    // 输出识别阶段汇总
+    printf("----------------------------------------\n");
+    printf("[PPOCR Timing] Total Recognition: %.2f ms (avg: %.2f ms per box, %d boxes)\n", 
+           total_rec_time, total_rec_time / out_result->count, out_result->count);
+    printf("\n========================================\n");
+    printf("[PPOCR Timing] Total: %.2f ms\n", out_result->total_inference_time_ms);
+    printf("========================================\n\n");
 
     return ret;
 }

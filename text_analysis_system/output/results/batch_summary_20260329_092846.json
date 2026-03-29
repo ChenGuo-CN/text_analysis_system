@@ -1,0 +1,19 @@
+{
+  "summary": {
+    "total_count": 1,
+    "success_count": 1,
+    "failed_count": 0,
+    "avg_ocr_time_ms": 552.661,
+    "avg_llm_time_ms": 34054.895,
+    "total_time_ms": 34607.555
+  },
+  "results": [
+    {
+      "image_path": "../datasets/test.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 552.661,
+      "llm_time_ms": 34054.895
+    }
+  ]
+}
