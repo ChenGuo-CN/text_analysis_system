@@ -41,4 +41,4 @@
 *.dw
 
 rknn-llm/
-rknn_model_zoo/o
+rknn_model_zoo/
