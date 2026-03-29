@@ -1,0 +1,49 @@
+{
+  "_comment": "文本分析系统配置文件",
+  
+  "model": {
+    "_comment": "模型文件路径配置",
+    "det_model_path": "model/ppocrv4_det_i8.rknn",
+    "rec_model_path": "model/ppocrv4_rec_fp16.rknn",
+    "dict_path": "model/ppocr_keys_v1.txt",
+    "llm_model_path": "/userdata/models/Qwen3-1.7B_W8A8_RK3588_16k_2npu.rkllm"
+  },
+  
+  "llm": {
+    "_comment": "大语言模型配置",
+    "system_prompt": "你是一个专业的文本校对助手。请分析以下OCR识别的文本内容，找出其中的错别字、漏字、多字等问题，并给出修改建议。请按以下JSON格式返回结果：{\"analysis\": \"整体分析\", \"errors\": [{\"position\": \"位置\", \"original\": \"原文\", \"suggestion\": \"建议修改\", \"confidence\": 0.95}]}",
+    "max_new_tokens": 1024,
+    "max_context_len": 2048,
+    "temperature": 0.8,
+    "top_p": 0.95,
+    "top_k": 1,
+    "repeat_penalty": 1.1
+  },
+  
+  "ocr": {
+    "_comment": "OCR文字识别配置",
+    "threshold": 0.3,
+    "box_threshold": 0.6,
+    "db_unclip_ratio": 1.5,
+    "use_dilate": false,
+    "db_score_mode": "slow",
+    "db_box_type": "poly"
+  },
+  
+  "queue": {
+    "_comment": "队列配置",
+    "max_size": 20
+  },
+  
+  "output": {
+    "_comment": "输出配置",
+    "result_dir": "output/results",
+    "save_annotated_image": true
+  },
+  
+  "performance": {
+    "_comment": "性能配置",
+    "enable_timing": true,
+    "log_level": 1
+  }
+}
