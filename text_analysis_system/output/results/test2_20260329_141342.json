@@ -1,0 +1,178 @@
+{
+  "image_path": "../datasets/test2.jpg",
+  "timestamp": "2026-03-29 14:13:38",
+  "ocr_result": {
+    "success": true,
+    "text_count": 16,
+    "texts": [
+      {
+        "text": "蓝山黑咖啡",
+        "confidence": 0.999,
+        "box": {
+          "left_top": [349, 294],
+          "right_top": [1140, 305],
+          "right_bottom": [1137, 422],
+          "left_bottom": [346, 408]
+        }
+      },
+      {
+        "text": "【产品名称】蓝山黑咖啡",
+        "confidence": 0.994,
+        "box": {
+          "left_top": [301, 490],
+          "right_top": [732, 501],
+          "right_bottom": [730, 550],
+          "left_bottom": [298, 540]
+        }
+      },
+      {
+        "text": "【产品类型】运动营养食品（补充能量类）",
+        "confidence": 0.991,
+        "box": {
+          "left_top": [301, 550],
+          "right_top": [1020, 579],
+          "right_bottom": [1017, 629],
+          "left_bottom": [298, 604]
+        }
+      },
+      {
+        "text": "【配料表】黑咖啡、蓝山黑咖啡、绿咖啡豆提",
+        "confidence": 0.993,
+        "box": {
+          "left_top": [306, 618],
+          "right_top": [1151, 650],
+          "right_bottom": [1148, 693],
+          "left_bottom": [303, 657]
+        }
+      },
+      {
+        "text": "取物、芒果浓缩粉",
+        "confidence": 0.991,
+        "box": {
+          "left_top": [311, 675],
+          "right_top": [626, 693],
+          "right_bottom": [623, 742],
+          "left_bottom": [309, 728]
+        }
+      },
+      {
+        "text": "【净含量】90g（3g×30袋）",
+        "confidence": 0.961,
+        "box": {
+          "left_top": [309, 742],
+          "right_top": [807, 767],
+          "right_bottom": [804, 810],
+          "left_bottom": [306, 785]
+        }
+      },
+      {
+        "text": "【冲泡方法】取本品一袋倒入杯中，加入50-10",
+        "confidence": 0.918,
+        "box": {
+          "left_top": [311, 803],
+          "right_top": [1140, 842],
+          "right_bottom": [1137, 884],
+          "left_bottom": [309, 845]
+        }
+      },
+      {
+        "text": "毫升左右的热水，搅拌均匀待温度适宜后即可饮",
+        "confidence": 0.992,
+        "box": {
+          "left_top": [322, 863],
+          "right_top": [1148, 902],
+          "right_bottom": [1145, 945],
+          "left_bottom": [319, 906]
+        }
+      },
+      {
+        "text": "用，可根据个人口味增减水量",
+        "confidence": 0.994,
+        "box": {
+          "left_top": [322, 916],
+          "right_top": [804, 948],
+          "right_bottom": [802, 991],
+          "left_bottom": [319, 959]
+        }
+      },
+      {
+        "text": "【适宜人群】需要快速或持续提供能的运动人群",
+        "confidence": 0.993,
+        "box": {
+          "left_top": [322, 977],
+          "right_top": [1132, 1023],
+          "right_bottom": [1129, 1066],
+          "left_bottom": [319, 1020]
+        }
+      },
+      {
+        "text": "【不适宜人群】婴幼儿、孕妇、哺乳期妇女及14",
+        "confidence": 0.970,
+        "box": {
+          "left_top": [322, 1030],
+          "right_top": [1124, 1080],
+          "right_bottom": [1121, 1123],
+          "left_bottom": [319, 1076]
+        }
+      },
+      {
+        "text": "周岁以下儿童不宜食用",
+        "confidence": 0.996,
+        "box": {
+          "left_top": [330, 1087],
+          "right_top": [703, 1112],
+          "right_bottom": [700, 1155],
+          "left_bottom": [327, 1130]
+        }
+      },
+      {
+        "text": "20",
+        "confidence": 0.624,
+        "box": {
+          "left_top": [10, 1098],
+          "right_top": [39, 1098],
+          "right_bottom": [39, 1119],
+          "left_bottom": [10, 1119]
+        }
+      },
+      {
+        "text": "【保质期】18个月",
+        "confidence": 0.997,
+        "box": {
+          "left_top": [327, 1140],
+          "right_top": [647, 1162],
+          "right_bottom": [644, 1204],
+          "left_bottom": [325, 1183]
+        }
+      },
+      {
+        "text": "【生产日期】见包装喷码处",
+        "confidence": 0.994,
+        "box": {
+          "left_top": [330, 1194],
+          "right_top": [762, 1222],
+          "right_bottom": [759, 1265],
+          "left_bottom": [327, 1236]
+        }
+      },
+      {
+        "text": "【贮藏方法】密封，置阴凉干燥处保存",
+        "confidence": 0.977,
+        "box": {
+          "left_top": [333, 1243],
+          "right_top": [948, 1286],
+          "right_bottom": [945, 1329],
+          "left_bottom": [330, 1286]
+        }
+      }
+    ],
+    "det_time_ms": 46.306,
+    "rec_time_ms": 536.422,
+    "inference_time_ms": 732.348
+  },
+  "llm_analysis": {
+    "success": true,
+    "analysis_text": "<think>\n\n</think>\n\n{\"is_correct\": true, \"corrected_text\": \"\"}",
+    "inference_time_ms": 3639.115
+  }
+}

@@ -5,13 +5,13 @@
 # compile CXX with /usr/bin/c++
 C_DEFINES = 
 
-C_INCLUDES = -I/home/linaro/traffic_text_analysis_system/test_select_npu/include -I/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include -isystem /usr/include/opencv4
+C_INCLUDES = -I/home/linaro/traffic_text_analysis_system/test_select_npu/include -I/home/linaro/traffic_text_analysis_system/test_select_npu/../rknn_model_zoo/3rdparty/rknpu2/include -isystem /usr/include/opencv4
 
 C_FLAGS = 
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/linaro/traffic_text_analysis_system/test_select_npu/include -I/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include -isystem /usr/include/opencv4
+CXX_INCLUDES = -I/home/linaro/traffic_text_analysis_system/test_select_npu/include -I/home/linaro/traffic_text_analysis_system/test_select_npu/../rknn_model_zoo/3rdparty/rknpu2/include -isystem /usr/include/opencv4
 
 CXX_FLAGS = -std=gnu++11
 

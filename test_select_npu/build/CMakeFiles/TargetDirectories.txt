@@ -1,7 +1,8 @@
 /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/install/strip.dir
-/home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/install/local.dir
 /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/install.dir
 /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/list_install_components.dir
 /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/rebuild_cache.dir
+/home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/install/local.dir
+/home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/copy_libs.dir
 /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/edit_cache.dir
 /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles/test_select_npu.dir

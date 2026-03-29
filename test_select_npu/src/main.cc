@@ -124,10 +124,25 @@ int main(int argc, char** argv) {
     printf("[Image Info]\n");
     printf("  Width: %d, Height: %d\n\n", src_img.width, src_img.height);
 
+    // 根据图片路径生成对应的预期文本文件路径
+    char expected_texts_file[512];
+    strncpy(expected_texts_file, image_path, sizeof(expected_texts_file) - 1);
+    expected_texts_file[sizeof(expected_texts_file) - 1] = '\0';
+    
+    // 将 .jpg 替换为 .txt
+    char* dot = strrchr(expected_texts_file, '.');
+    if (dot != NULL && (strcmp(dot, ".jpg") == 0 || strcmp(dot, ".jpeg") == 0 || 
+                        strcmp(dot, ".png") == 0 || strcmp(dot, ".bmp") == 0)) {
+        strcpy(dot, ".txt");
+    } else {
+        // 如果没有扩展名或扩展名不匹配，追加 .txt
+        strncat(expected_texts_file, ".txt", sizeof(expected_texts_file) - strlen(expected_texts_file) - 1);
+    }
+    
     // 加载预期文本
     expected_texts_t expected;
     memset(&expected, 0, sizeof(expected_texts_t));
-    load_expected_texts(EXPECTED_TEXTS_FILE, &expected);
+    load_expected_texts(expected_texts_file, &expected);
 
     // 初始化系统上下文
     ppocr_system_app_context sys_ctx;

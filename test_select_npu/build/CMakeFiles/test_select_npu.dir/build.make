@@ -206,7 +206,7 @@ test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_videostab.so.4.5.1
 test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_viz.so.4.5.1
 test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_xobjdetect.so.4.5.1
 test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_xphoto.so.4.5.1
-test_select_npu: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/Linux/aarch64/librknnrt.so
+test_select_npu: ../lib/librknnrt.so
 test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_highgui.so.4.5.1
 test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_datasets.so.4.5.1
 test_select_npu: /usr/lib/aarch64-linux-gnu/libopencv_plot.so.4.5.1

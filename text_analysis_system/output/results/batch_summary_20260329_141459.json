@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "total_count": 7,
+    "success_count": 7,
+    "failed_count": 0,
+    "avg_ocr_time_ms": 369.518,
+    "avg_llm_time_ms": 10191.165,
+    "total_time_ms": 73924.781
+  },
+  "results": [
+    {
+      "image_path": "../datasets/2.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 131.529,
+      "llm_time_ms": 2909.046
+    },
+    {
+      "image_path": "../datasets/5.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 264.019,
+      "llm_time_ms": 6990.345
+    },
+    {
+      "image_path": "../datasets/1.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 183.529,
+      "llm_time_ms": 4522.306
+    },
+    {
+      "image_path": "../datasets/4.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 182.584,
+      "llm_time_ms": 4123.635
+    },
+    {
+      "image_path": "../datasets/3.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 144.531,
+      "llm_time_ms": 2317.627
+    },
+    {
+      "image_path": "../datasets/test2.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 928.425,
+      "llm_time_ms": 25524.297
+    },
+    {
+      "image_path": "../datasets/test.jpg",
+      "ocr_success": true,
+      "llm_success": true,
+      "ocr_time_ms": 752.006,
+      "llm_time_ms": 24950.902
+    }
+  ]
+}

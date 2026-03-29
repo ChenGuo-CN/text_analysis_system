@@ -72,6 +72,7 @@ CMAKE_BINARY_DIR = /home/linaro/traffic_text_analysis_system/test_select_npu/bui
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/copy_libs.dir/all
 all: CMakeFiles/test_select_npu.dir/all
 
 .PHONY : all
@@ -82,23 +83,51 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/copy_libs.dir/clean
 clean: CMakeFiles/test_select_npu.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/copy_libs.dir
+
+# All Build rule for target.
+CMakeFiles/copy_libs.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_libs.dir/build.make CMakeFiles/copy_libs.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_libs.dir/build.make CMakeFiles/copy_libs.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles --progress-num=1 "Built target copy_libs"
+.PHONY : CMakeFiles/copy_libs.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/copy_libs.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/copy_libs.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles 0
+.PHONY : CMakeFiles/copy_libs.dir/rule
+
+# Convenience name for target.
+copy_libs: CMakeFiles/copy_libs.dir/rule
+
+.PHONY : copy_libs
+
+# clean rule for target.
+CMakeFiles/copy_libs.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_libs.dir/build.make CMakeFiles/copy_libs.dir/clean
+.PHONY : CMakeFiles/copy_libs.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/test_select_npu.dir
 
 # All Build rule for target.
-CMakeFiles/test_select_npu.dir/all:
+CMakeFiles/test_select_npu.dir/all: CMakeFiles/copy_libs.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_select_npu.dir/build.make CMakeFiles/test_select_npu.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_select_npu.dir/build.make CMakeFiles/test_select_npu.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target test_select_npu"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles --progress-num=2,3,4,5,6,7,8 "Built target test_select_npu"
 .PHONY : CMakeFiles/test_select_npu.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_select_npu.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_select_npu.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/linaro/traffic_text_analysis_system/test_select_npu/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_select_npu.dir/rule

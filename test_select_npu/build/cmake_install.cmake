@@ -54,7 +54,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/./test_select_npu")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/./test_select_npu"
-         OLD_RPATH "/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/Linux/aarch64:"
+         OLD_RPATH "/home/linaro/traffic_text_analysis_system/test_select_npu/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/./test_select_npu")

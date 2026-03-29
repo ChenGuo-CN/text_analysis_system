@@ -13,7 +13,7 @@ set(CMAKE_C_COMPILER_ID "GNU")
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "../include"
-  "/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include"
+  "../../rknn_model_zoo/3rdparty/rknpu2/include"
   "/usr/include/opencv4"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
@@ -27,7 +27,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
-  "/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include"
+  "../../rknn_model_zoo/3rdparty/rknpu2/include"
   "/usr/include/opencv4"
   )
 

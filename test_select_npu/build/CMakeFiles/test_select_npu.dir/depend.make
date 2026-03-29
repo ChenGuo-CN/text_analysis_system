@@ -12,18 +12,18 @@ CMakeFiles/test_select_npu.dir/src/image_utils.c.o: ../src/image_utils.c
 CMakeFiles/test_select_npu.dir/src/clipper.cc.o: ../include/clipper.h
 CMakeFiles/test_select_npu.dir/src/clipper.cc.o: ../src/clipper.cc
 
+CMakeFiles/test_select_npu.dir/src/main.cc.o: ../../rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
 CMakeFiles/test_select_npu.dir/src/main.cc.o: ../include/common.h
 CMakeFiles/test_select_npu.dir/src/main.cc.o: ../include/file_utils.h
 CMakeFiles/test_select_npu.dir/src/main.cc.o: ../include/image_utils.h
 CMakeFiles/test_select_npu.dir/src/main.cc.o: ../include/ppocr_system.h
-CMakeFiles/test_select_npu.dir/src/main.cc.o: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
 CMakeFiles/test_select_npu.dir/src/main.cc.o: ../src/main.cc
 
+CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: ../../rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: ../include/clipper.h
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: ../include/common.h
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: ../include/dict.h
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: ../include/ppocr_system.h
-CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: ../src/postprocess.cc
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: /usr/include/opencv4/opencv2/calib3d.hpp
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: /usr/include/opencv4/opencv2/core.hpp
@@ -127,11 +127,11 @@ CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: /usr/include/opencv4/opencv
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: /usr/include/opencv4/opencv2/video/tracking.hpp
 CMakeFiles/test_select_npu.dir/src/postprocess.cc.o: /usr/include/opencv4/opencv2/videoio.hpp
 
+CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: ../../rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: ../include/common.h
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: ../include/file_utils.h
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: ../include/image_utils.h
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: ../include/ppocr_system.h
-CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: ../src/ppocr_system_npu2.cc
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: /usr/include/opencv4/opencv2/calib3d.hpp
 CMakeFiles/test_select_npu.dir/src/ppocr_system_npu2.cc.o: /usr/include/opencv4/opencv2/core.hpp
