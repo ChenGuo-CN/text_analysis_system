@@ -80,8 +80,8 @@ int OCREngine::release() {
     return (ret1 == 0 && ret2 == 0) ? 0 : -1;
 }
 
-int OCREngine::recognize(const std::string& image_path, 
-                         OCRResult& result, 
+int OCREngine::recognize(const std::string& image_path,
+                         OCRResult& result,
                          PerfMonitor* perf_monitor) {
     if (!initialized_) {
         printf("[OCREngine] 错误: 引擎未初始化\n");
@@ -109,7 +109,7 @@ int OCREngine::recognize(const std::string& image_path,
     memset(&ppocr_result, 0, sizeof(ppocr_result));
 
     ret = inference_ppocr_system_model(&app_ctx_, &src_image, &params_, &ppocr_result);
-    
+
     // 计算总耗时
     auto end_time = std::chrono::high_resolution_clock::now();
     float total_time_ms = std::chrono::duration<float, std::milli>(end_time - start_time).count();
@@ -129,7 +129,14 @@ int OCREngine::recognize(const std::string& image_path,
     // 转换结果
     convertResult(ppocr_result, image_path, result);
     result.success = true;
+    // 暂时使用总耗时作为检测和识别的估计值
+    // 实际应用中可以通过修改ppocr_system_npu2.cc来分别计时
+    result.perf_stats.det_time_ms = total_time_ms * 0.3f;  // 估计检测占30%
+    result.perf_stats.rec_time_ms = total_time_ms * 0.6f;  // 估计识别占60%
     result.perf_stats.total_time_ms = total_time_ms;
+
+    printf("[OCREngine] OCR识别成功: %s, 识别到 %zu 个文本, 总耗时: %.2f ms\n",
+           image_path.c_str(), result.text_items.size(), total_time_ms);
 
     // 记录性能统计
     if (perf_monitor != nullptr) {

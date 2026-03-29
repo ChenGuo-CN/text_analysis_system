@@ -1,0 +1,38 @@
+{
+  "image_path": "../../datasets/3.jpg",
+  "timestamp": "2026-03-29 07:20:07",
+  "ocr_result": {
+    "success": true,
+    "text_count": 2,
+    "texts": [
+      {
+        "text": "拒绝超载",
+        "confidence": 0.995,
+        "box": {
+          "left_top": [61, 202],
+          "right_top": [148, 204],
+          "right_bottom": [147, 224],
+          "left_bottom": [60, 222]
+        }
+      },
+      {
+        "text": "超员超速",
+        "confidence": 0.995,
+        "box": {
+          "left_top": [60, 226],
+          "right_top": [148, 226],
+          "right_bottom": [148, 247],
+          "left_bottom": [60, 246]
+        }
+      }
+    ],
+    "det_time_ms": 44.041,
+    "rec_time_ms": 88.081,
+    "inference_time_ms": 146.802
+  },
+  "llm_analysis": {
+    "success": true,
+    "analysis_text": "<think>\n\n</think>\n\n{\"is_correct\": true, \"corrected_text\": \"\"}",
+    "inference_time_ms": 2234.879
+  }
+}

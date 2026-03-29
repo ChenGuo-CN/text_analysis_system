@@ -1,0 +1,48 @@
+{
+  "image_path": "../../datasets/4.jpg",
+  "timestamp": "2026-03-29 07:20:07",
+  "ocr_result": {
+    "success": true,
+    "text_count": 3,
+    "texts": [
+      {
+        "text": "安全车速",
+        "confidence": 0.997,
+        "box": {
+          "left_top": [149, 158],
+          "right_top": [234, 149],
+          "right_bottom": [235, 175],
+          "left_bottom": [151, 185]
+        }
+      },
+      {
+        "text": "谨慎驾驶",
+        "confidence": 0.998,
+        "box": {
+          "left_top": [150, 181],
+          "right_top": [234, 177],
+          "right_bottom": [235, 204],
+          "left_bottom": [151, 209]
+        }
+      },
+      {
+        "text": "维的美光电有限公",
+        "confidence": 0.997,
+        "box": {
+          "left_top": [90, 255],
+          "right_top": [266, 255],
+          "right_bottom": [266, 273],
+          "left_bottom": [90, 273]
+        }
+      }
+    ],
+    "det_time_ms": 53.057,
+    "rec_time_ms": 106.114,
+    "inference_time_ms": 176.857
+  },
+  "llm_analysis": {
+    "success": true,
+    "analysis_text": "<think>\n\n</think>\n\n{\"is_correct\": false, \"corrected_text\": \"安全车速 谨慎驾驶 维的美光电有限公\"}",
+    "inference_time_ms": 4003.803
+  }
+}

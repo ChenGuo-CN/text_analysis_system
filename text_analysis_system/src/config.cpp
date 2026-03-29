@@ -26,20 +26,21 @@ Config& getConfig() {
  * @brief 加载默认配置
  */
 void Config::loadDefaults() {
-    // 模型默认配置
-    model.det_model_path = "model/ppocrv4_det_i8.rknn";
-    model.rec_model_path = "model/ppocrv4_rec_fp16.rknn";
-    model.dict_path = "model/ppocr_keys_v1.txt";
+    // 模型默认配置（使用resolvePath解析相对路径）
+    model.det_model_path = resolvePath("model/ppocrv4_det_i8.rknn");
+    model.rec_model_path = resolvePath("model/ppocrv4_rec_fp16.rknn");
+    model.dict_path = resolvePath("model/ppocr_keys_v1.txt");
     model.llm_model_path = "/userdata/models/Qwen3-1.7B_W8A8_RK3588_16k_2npu.rkllm";
 
     // LLM默认配置
-    llm.system_prompt = "你是一个专业的文本校对助手。请分析以下OCR识别的文本内容，找出其中的错别字、漏字等问题，并给出修改建议。请以JSON格式返回结果。";
-    llm.max_new_tokens = 1024;
+    llm.system_prompt = "你是一个文本校对助手。请分析OCR识别的文本，判断是否有错别字、漏字、多字。请以JSON格式返回：{\"is_correct\": true/false, \"corrected_text\": \"修正后的文本（无误则为空）\"}";
+    llm.enable_thinking = false;
+    llm.max_new_tokens = 256;
     llm.max_context_len = 2048;
-    llm.temperature = 0.8;
-    llm.top_p = 0.95;
+    llm.temperature = 0.1;
+    llm.top_p = 0.9;
     llm.top_k = 1;
-    llm.repeat_penalty = 1.1;
+    llm.repeat_penalty = 1.0;
 
     // OCR默认配置
     ocr.threshold = 0.3;
@@ -53,7 +54,7 @@ void Config::loadDefaults() {
     queue.max_size = 20;
 
     // 输出默认配置
-    output.result_dir = "output/results";
+    output.result_dir = resolvePath("output/results");
     output.save_annotated_image = true;
 
     // 性能默认配置
@@ -68,7 +69,7 @@ int Config::loadFromFile(const std::string& filepath, const std::string& base_di
     // 保存基础目录
     base_dir_ = base_dir;
 
-    // 首先加载默认配置
+    // 首先加载默认配置（此时base_dir_已设置，可在loadDefaults中使用）
     loadDefaults();
 
     // 检查文件是否存在
@@ -159,6 +160,9 @@ int Config::parseLLMConfig(const void* json_obj) {
     if (j->contains("system_prompt")) {
         llm.system_prompt = (*j)["system_prompt"].get<std::string>();
     }
+    if (j->contains("enable_thinking")) {
+        llm.enable_thinking = (*j)["enable_thinking"].get<bool>();
+    }
     if (j->contains("max_new_tokens")) {
         llm.max_new_tokens = (*j)["max_new_tokens"].get<int>();
     }
@@ -229,7 +233,7 @@ int Config::parseOutputConfig(const void* json_obj) {
     const json* j = static_cast<const json*>(json_obj);
     
     if (j->contains("result_dir")) {
-        output.result_dir = (*j)["result_dir"].get<std::string>();
+        output.result_dir = resolvePath((*j)["result_dir"].get<std::string>());
     }
     if (j->contains("save_annotated_image")) {
         output.save_annotated_image = (*j)["save_annotated_image"].get<bool>();
@@ -302,6 +306,7 @@ void Config::print() const {
     
     printf("\n[LLM配置]\n");
     printf("  System Prompt: %s\n", llm.system_prompt.substr(0, 50).c_str());
+    printf("  Enable Thinking: %s\n", llm.enable_thinking ? "true" : "false");
     printf("  Max New Tokens: %d\n", llm.max_new_tokens);
     printf("  Max Context Len: %d\n", llm.max_context_len);
     printf("  Temperature: %.2f\n", llm.temperature);
@@ -333,6 +338,7 @@ void Config::print() const {
 
 /**
  * @brief 将相对路径转换为绝对路径
+ * 如果文件在base_dir下不存在，尝试在父目录查找
  */
 std::string Config::resolvePath(const std::string& path) const {
     if (path.empty() || path[0] == '/') {
@@ -342,5 +348,20 @@ std::string Config::resolvePath(const std::string& path) const {
     if (base_dir_.empty()) {
         return path;
     }
-    return base_dir_ + "/" + path;
+    
+    // 首先尝试基于base_dir的路径
+    std::string full_path = base_dir_ + "/" + path;
+    struct stat st;
+    if (stat(full_path.c_str(), &st) == 0) {
+        return full_path;
+    }
+    
+    // 如果文件不存在，尝试在父目录查找（适用于从build目录运行的情况）
+    std::string parent_path = base_dir_ + "/../" + path;
+    if (stat(parent_path.c_str(), &st) == 0) {
+        return parent_path;
+    }
+    
+    // 返回原始组合路径（文件可能尚不存在）
+    return full_path;
 }

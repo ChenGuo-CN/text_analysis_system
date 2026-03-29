@@ -27,6 +27,7 @@ typedef struct {
  */
 typedef struct {
     std::string system_prompt;      // 系统提示词
+    bool enable_thinking;           // 是否启用think模式
     int max_new_tokens;             // 最大生成token数
     int max_context_len;            // 最大上下文长度
     float temperature;              // 温度参数

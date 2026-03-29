@@ -115,6 +115,8 @@ std::string ResultHandler::resultToJSON(const ProcessingResult& result) const {
         oss << "\n";
     }
     oss << "    ],\n";
+    oss << "    \"det_time_ms\": " << result.ocr_result.perf_stats.det_time_ms << ",\n";
+    oss << "    \"rec_time_ms\": " << result.ocr_result.perf_stats.rec_time_ms << ",\n";
     oss << "    \"inference_time_ms\": " << result.ocr_result.perf_stats.total_time_ms << "\n";
     oss << "  },\n";
 
@@ -218,7 +220,7 @@ int ResultHandler::writeFile(const std::string& filepath, const std::string& con
 
 std::string ResultHandler::escapeJSON(const std::string& str) const {
     std::ostringstream oss;
-    for (char c : str) {
+    for (unsigned char c : str) {
         switch (c) {
             case '"': oss << "\\\""; break;
             case '\\': oss << "\\\\"; break;
@@ -228,11 +230,11 @@ std::string ResultHandler::escapeJSON(const std::string& str) const {
             case '\r': oss << "\\r"; break;
             case '\t': oss << "\\t"; break;
             default:
-                if (c >= 0x20 && c <= 0x7E) {
-                    oss << c;
+                // 仅转义控制字符(0x00-0x1F)，保留UTF-8字节原样
+                if (c < 0x20) {
+                    oss << "\\u" << std::hex << std::setw(4) << std::setfill('0') << (unsigned int)c;
                 } else {
-                    // 转义非ASCII字符
-                    oss << "\\u" << std::hex << std::setw(4) << std::setfill('0') << (static_cast<unsigned int>(c) & 0xFFFF);
+                    oss << c;  // 保留UTF-8字节不变
                 }
         }
     }

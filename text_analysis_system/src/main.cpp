@@ -413,6 +413,16 @@ int main(int argc, char** argv) {
     
     // 解析配置文件路径（如果是相对路径，则基于可执行文件目录）
     std::string full_config_path = resolvePath(config_path);
+    
+    // 如果配置文件不存在，尝试在父目录查找（适用于从build目录运行的情况）
+    struct stat st;
+    if (stat(full_config_path.c_str(), &st) != 0) {
+        std::string parent_dir_config = g_exec_dir + "/../" + config_path;
+        if (stat(parent_dir_config.c_str(), &st) == 0) {
+            full_config_path = parent_dir_config;
+        }
+    }
+    
     printf("[Main] 配置文件路径: %s\n", full_config_path.c_str());
     
     // 设置信号处理

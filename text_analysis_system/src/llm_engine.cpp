@@ -95,10 +95,24 @@ int LLMEngine::initialize(const Config& config) {
     }
 
     // 设置chat_template和system prompt
-    const char* prompt_prefix = "<|im_start|>user\n";
-    const char* prompt_postfix = "<|im_end|>\n<|im_start|>assistant\n";
-    ret = rkllm_set_chat_template(llm_handle_, config.llm.system_prompt.c_str(), 
-                                   prompt_prefix, prompt_postfix);
+    // 根据enable_thinking配置决定是否禁用think模式
+    if (!config.llm.enable_thinking) {
+        // 禁用think模式：在system prompt后添加/no_think指令
+        std::string modified_prompt = config.llm.system_prompt;
+        modified_prompt += "\n/no_think";
+        const char* prompt_prefix = "<|im_start|>user\n";
+        const char* prompt_postfix = "<|im_end|>\n<|im_start|>assistant\n";
+        ret = rkllm_set_chat_template(llm_handle_, modified_prompt.c_str(),
+                                       prompt_prefix, prompt_postfix);
+        printf("[LLMEngine] Think模式已禁用\n");
+    } else {
+        const char* prompt_prefix = "<|im_start|>user\n";
+        const char* prompt_postfix = "<|im_end|>\n<|im_start|>assistant\n";
+        ret = rkllm_set_chat_template(llm_handle_, config.llm.system_prompt.c_str(),
+                                       prompt_prefix, prompt_postfix);
+        printf("[LLMEngine] Think模式已启用\n");
+    }
+
     if (ret != 0) {
         printf("[LLMEngine] 警告: chat_template设置失败，使用默认配置\n");
     } else {
@@ -215,24 +229,11 @@ std::string LLMEngine::buildPrompt(const OCRResult& ocr_result) {
     // 提取所有文本
     std::string all_text = extractText(ocr_result);
     
-    // 构建分析prompt
-    oss << "请分析以下OCR识别的文本内容，找出其中的错别字、漏字、多字等问题，并给出修改建议。\n\n";
-    oss << "识别的文本内容：\n";
+    // 仅构建用户输入部分，不指定输出格式（由system prompt控制）
+    oss << "请分析以下OCR识别的文本内容：\n\n";
     oss << "```\n";
     oss << all_text;
-    oss << "\n```\n\n";
-    oss << "请按以下JSON格式返回结果：\n";
-    oss << "{\n";
-    oss << "  \"analysis\": \"整体分析说明\",\n";
-    oss << "  \"errors\": [\n";
-    oss << "    {\n";
-    oss << "      \"position\": \"问题位置\",\n";
-    oss << "      \"original\": \"原文\",\n";
-    oss << "      \"suggestion\": \"建议修改\",\n";
-    oss << "      \"confidence\": 0.95\n";
-    oss << "    }\n";
-    oss << "  ]\n";
-    oss << "}\n";
+    oss << "\n```\n";
     
     return oss.str();
 }
