@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/common.h
+
+../include/file_utils.h
+
+../include/image_utils.h
+common.h
+../include/common.h
+
+../include/ppocr_system.h
+rknn_api.h
+../include/rknn_api.h
+common.h
+../include/common.h
+string
+-
+
+/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
+stdint.h
+-
+
+/home/linaro/traffic_text_analysis_system/test_select_npu/src/main.cc
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+sys/time.h
+-
+ppocr_system.h
+/home/linaro/traffic_text_analysis_system/test_select_npu/src/ppocr_system.h
+common.h
+/home/linaro/traffic_text_analysis_system/test_select_npu/src/common.h
+file_utils.h
+/home/linaro/traffic_text_analysis_system/test_select_npu/src/file_utils.h
+image_utils.h
+/home/linaro/traffic_text_analysis_system/test_select_npu/src/image_utils.h
+

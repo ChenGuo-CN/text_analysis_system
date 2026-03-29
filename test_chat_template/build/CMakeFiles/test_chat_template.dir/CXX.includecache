@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../../rknn-llm/rkllm-runtime/Linux/librkllm_api/include/rkllm.h
+cstdint
+-
+
+/home/linaro/traffic_text_analysis_system/test_chat_template/src/main.cpp
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+unistd.h
+-
+signal.h
+-
+string
+-
+iostream
+-
+rkllm.h
+/home/linaro/traffic_text_analysis_system/test_chat_template/src/rkllm.h
+
