@@ -87,18 +87,6 @@ install/strip/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
@@ -143,6 +131,18 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/linaro/traffic_text_analysis_system/ppocr_timing/build/CMakeFiles /home/linaro/traffic_text_analysis_system/ppocr_timing/build//CMakeFiles/progress.marks
@@ -176,6 +176,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named copy_libs
+
+# Build rule for target.
+copy_libs: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 copy_libs
+.PHONY : copy_libs
+
+# fast build rule for target.
+copy_libs/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_libs.dir/build.make CMakeFiles/copy_libs.dir/build
+.PHONY : copy_libs/fast
+
+#=============================================================================
 # Target rules for targets named ppocr_timing
 
 # Build rule for target.
@@ -188,57 +201,32 @@ ppocr_timing/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/build
 .PHONY : ppocr_timing/fast
 
-#=============================================================================
-# Target rules for targets named audioutils
+home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.o: home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o
 
-# Build rule for target.
-audioutils: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 audioutils
-.PHONY : audioutils
+.PHONY : home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.o
 
-# fast build rule for target.
-audioutils/fast:
-	$(MAKE) $(MAKESILENT) -f utils.out/CMakeFiles/audioutils.dir/build.make utils.out/CMakeFiles/audioutils.dir/build
-.PHONY : audioutils/fast
+# target to build an object file
+home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o
+.PHONY : home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o
 
-#=============================================================================
-# Target rules for targets named imageutils
+home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.i: home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i
 
-# Build rule for target.
-imageutils: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 imageutils
-.PHONY : imageutils
+.PHONY : home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.i
 
-# fast build rule for target.
-imageutils/fast:
-	$(MAKE) $(MAKESILENT) -f utils.out/CMakeFiles/imageutils.dir/build.make utils.out/CMakeFiles/imageutils.dir/build
-.PHONY : imageutils/fast
+# target to preprocess a source file
+home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i
+.PHONY : home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i
 
-#=============================================================================
-# Target rules for targets named imagedrawing
+home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.s: home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s
 
-# Build rule for target.
-imagedrawing: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 imagedrawing
-.PHONY : imagedrawing
+.PHONY : home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.s
 
-# fast build rule for target.
-imagedrawing/fast:
-	$(MAKE) $(MAKESILENT) -f utils.out/CMakeFiles/imagedrawing.dir/build.make utils.out/CMakeFiles/imagedrawing.dir/build
-.PHONY : imagedrawing/fast
-
-#=============================================================================
-# Target rules for targets named fileutils
-
-# Build rule for target.
-fileutils: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fileutils
-.PHONY : fileutils
-
-# fast build rule for target.
-fileutils/fast:
-	$(MAKE) $(MAKESILENT) -f utils.out/CMakeFiles/fileutils.dir/build.make utils.out/CMakeFiles/fileutils.dir/build
-.PHONY : fileutils/fast
+# target to generate assembly for a file
+home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s
+.PHONY : home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s
 
 src/clipper.o: src/clipper.cc.o
 
@@ -266,6 +254,60 @@ src/clipper.s: src/clipper.cc.s
 src/clipper.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/clipper.cc.s
 .PHONY : src/clipper.cc.s
+
+src/file_utils.o: src/file_utils.c.o
+
+.PHONY : src/file_utils.o
+
+# target to build an object file
+src/file_utils.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/file_utils.c.o
+.PHONY : src/file_utils.c.o
+
+src/file_utils.i: src/file_utils.c.i
+
+.PHONY : src/file_utils.i
+
+# target to preprocess a source file
+src/file_utils.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/file_utils.c.i
+.PHONY : src/file_utils.c.i
+
+src/file_utils.s: src/file_utils.c.s
+
+.PHONY : src/file_utils.s
+
+# target to generate assembly for a file
+src/file_utils.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/file_utils.c.s
+.PHONY : src/file_utils.c.s
+
+src/image_utils.o: src/image_utils.c.o
+
+.PHONY : src/image_utils.o
+
+# target to build an object file
+src/image_utils.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/image_utils.c.o
+.PHONY : src/image_utils.c.o
+
+src/image_utils.i: src/image_utils.c.i
+
+.PHONY : src/image_utils.i
+
+# target to preprocess a source file
+src/image_utils.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/image_utils.c.i
+.PHONY : src/image_utils.c.i
+
+src/image_utils.s: src/image_utils.c.s
+
+.PHONY : src/image_utils.s
+
+# target to generate assembly for a file
+src/image_utils.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppocr_timing.dir/build.make CMakeFiles/ppocr_timing.dir/src/image_utils.c.s
+.PHONY : src/image_utils.c.s
 
 src/main.o: src/main.cc.o
 
@@ -360,14 +402,20 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... audioutils"
-	@echo "... fileutils"
-	@echo "... imagedrawing"
-	@echo "... imageutils"
+	@echo "... copy_libs"
 	@echo "... ppocr_timing"
+	@echo "... home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.o"
+	@echo "... home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.i"
+	@echo "... home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.s"
 	@echo "... src/clipper.o"
 	@echo "... src/clipper.i"
 	@echo "... src/clipper.s"
+	@echo "... src/file_utils.o"
+	@echo "... src/file_utils.i"
+	@echo "... src/file_utils.s"
+	@echo "... src/image_utils.o"
+	@echo "... src/image_utils.i"
+	@echo "... src/image_utils.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

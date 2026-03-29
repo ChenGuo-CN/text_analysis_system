@@ -128,12 +128,54 @@ CMakeFiles/ppocr_timing.dir/src/clipper.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ppocr_timing.dir/src/clipper.cc.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/linaro/traffic_text_analysis_system/ppocr_timing/src/clipper.cc -o CMakeFiles/ppocr_timing.dir/src/clipper.cc.s
 
+CMakeFiles/ppocr_timing.dir/src/file_utils.c.o: CMakeFiles/ppocr_timing.dir/flags.make
+CMakeFiles/ppocr_timing.dir/src/file_utils.c.o: ../src/file_utils.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/ppocr_timing.dir/src/file_utils.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/ppocr_timing.dir/src/file_utils.c.o -c /home/linaro/traffic_text_analysis_system/ppocr_timing/src/file_utils.c
+
+CMakeFiles/ppocr_timing.dir/src/file_utils.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/ppocr_timing.dir/src/file_utils.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/linaro/traffic_text_analysis_system/ppocr_timing/src/file_utils.c > CMakeFiles/ppocr_timing.dir/src/file_utils.c.i
+
+CMakeFiles/ppocr_timing.dir/src/file_utils.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ppocr_timing.dir/src/file_utils.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/linaro/traffic_text_analysis_system/ppocr_timing/src/file_utils.c -o CMakeFiles/ppocr_timing.dir/src/file_utils.c.s
+
+CMakeFiles/ppocr_timing.dir/src/image_utils.c.o: CMakeFiles/ppocr_timing.dir/flags.make
+CMakeFiles/ppocr_timing.dir/src/image_utils.c.o: ../src/image_utils.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/ppocr_timing.dir/src/image_utils.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/ppocr_timing.dir/src/image_utils.c.o -c /home/linaro/traffic_text_analysis_system/ppocr_timing/src/image_utils.c
+
+CMakeFiles/ppocr_timing.dir/src/image_utils.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/ppocr_timing.dir/src/image_utils.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/linaro/traffic_text_analysis_system/ppocr_timing/src/image_utils.c > CMakeFiles/ppocr_timing.dir/src/image_utils.c.i
+
+CMakeFiles/ppocr_timing.dir/src/image_utils.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ppocr_timing.dir/src/image_utils.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/linaro/traffic_text_analysis_system/ppocr_timing/src/image_utils.c -o CMakeFiles/ppocr_timing.dir/src/image_utils.c.s
+
+CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o: CMakeFiles/ppocr_timing.dir/flags.make
+CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o -c /home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c
+
+CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c > CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.i
+
+CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c -o CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.s
+
 # Object files for target ppocr_timing
 ppocr_timing_OBJECTS = \
 "CMakeFiles/ppocr_timing.dir/src/main.cc.o" \
 "CMakeFiles/ppocr_timing.dir/src/ppocr_system.cc.o" \
 "CMakeFiles/ppocr_timing.dir/src/postprocess.cc.o" \
-"CMakeFiles/ppocr_timing.dir/src/clipper.cc.o"
+"CMakeFiles/ppocr_timing.dir/src/clipper.cc.o" \
+"CMakeFiles/ppocr_timing.dir/src/file_utils.c.o" \
+"CMakeFiles/ppocr_timing.dir/src/image_utils.c.o" \
+"CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o"
 
 # External object files for target ppocr_timing
 ppocr_timing_EXTERNAL_OBJECTS =
@@ -142,10 +184,10 @@ ppocr_timing: CMakeFiles/ppocr_timing.dir/src/main.cc.o
 ppocr_timing: CMakeFiles/ppocr_timing.dir/src/ppocr_system.cc.o
 ppocr_timing: CMakeFiles/ppocr_timing.dir/src/postprocess.cc.o
 ppocr_timing: CMakeFiles/ppocr_timing.dir/src/clipper.cc.o
+ppocr_timing: CMakeFiles/ppocr_timing.dir/src/file_utils.c.o
+ppocr_timing: CMakeFiles/ppocr_timing.dir/src/image_utils.c.o
+ppocr_timing: CMakeFiles/ppocr_timing.dir/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.c.o
 ppocr_timing: CMakeFiles/ppocr_timing.dir/build.make
-ppocr_timing: utils.out/libfileutils.a
-ppocr_timing: utils.out/libimageutils.a
-ppocr_timing: utils.out/libimagedrawing.a
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_stitching.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_alphamat.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_aruco.so.4.5.1
@@ -179,9 +221,8 @@ ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_videostab.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_viz.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_xobjdetect.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_xphoto.so.4.5.1
-ppocr_timing: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/Linux/aarch64/librknnrt.so
-ppocr_timing: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/jpeg_turbo/Linux/aarch64/libturbojpeg.a
-ppocr_timing: /home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/librga/Linux/aarch64/librga.a
+ppocr_timing: ../lib/librknnrt.so
+ppocr_timing: ../lib/librga.so
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_highgui.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_datasets.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_plot.so.4.5.1
@@ -202,7 +243,7 @@ ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_photo.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_imgproc.so.4.5.1
 ppocr_timing: /usr/lib/aarch64-linux-gnu/libopencv_core.so.4.5.1
 ppocr_timing: CMakeFiles/ppocr_timing.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable ppocr_timing"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable ppocr_timing"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ppocr_timing.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

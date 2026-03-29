@@ -218,18 +218,6 @@ ppocr_timing_BINARY_DIR:STATIC=/home/linaro/traffic_text_analysis_system/ppocr_t
 //Value Computed by CMake
 ppocr_timing_SOURCE_DIR:STATIC=/home/linaro/traffic_text_analysis_system/ppocr_timing
 
-//Value Computed by CMake
-rknn_model_zoo_3rdparty_libs_BINARY_DIR:STATIC=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/3rdparty.out
-
-//Value Computed by CMake
-rknn_model_zoo_3rdparty_libs_SOURCE_DIR:STATIC=/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty
-
-//Value Computed by CMake
-rknn_model_zoo_utils_BINARY_DIR:STATIC=/home/linaro/traffic_text_analysis_system/ppocr_timing/build/utils.out
-
-//Value Computed by CMake
-rknn_model_zoo_utils_SOURCE_DIR:STATIC=/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils
-
 
 ########################
 # INTERNAL cache entries
@@ -339,7 +327,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

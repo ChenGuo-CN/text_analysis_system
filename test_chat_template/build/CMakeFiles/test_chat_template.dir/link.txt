@@ -1,1 +1,1 @@
-/usr/bin/aarch64-linux-gnu-g++  -O3 -O3 -DNDEBUG CMakeFiles/test_chat_template.dir/src/main.cpp.o -o test_chat_template  -Wl,-rpath,"\$ORIGIN/lib" ../../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64/librkllmrt.so -lpthread 
+/usr/bin/aarch64-linux-gnu-g++  -O3 -O3 -DNDEBUG CMakeFiles/test_chat_template.dir/src/main.cpp.o -o test_chat_template  -Wl,-rpath,../lib ../../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64/librkllmrt.so -lpthread 

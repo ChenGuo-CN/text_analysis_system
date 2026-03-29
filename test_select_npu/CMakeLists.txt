@@ -5,10 +5,11 @@ project(test_select_npu)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 设置RKNN模型库路径
-set(RKNN_MODEL_ZOO_ROOT /home/linaro/traffic_text_analysis_system/rknn_model_zoo)
+# 使用相对路径引用rknn_model_zoo（基于项目根目录的父目录）
+set(RKNN_MODEL_ZOO_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../rknn_model_zoo)
 set(RKNPU2_INCLUDE ${RKNN_MODEL_ZOO_ROOT}/3rdparty/rknpu2/include)
-set(RKNPU2_LIB ${RKNN_MODEL_ZOO_ROOT}/3rdparty/rknpu2/Linux/aarch64/librknnrt.so)
+set(RKNPU2_SRC_LIB ${RKNN_MODEL_ZOO_ROOT}/3rdparty/rknpu2/Linux/aarch64/librknnrt.so)
+set(RKNPU2_DST_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/librknnrt.so)
 
 # OpenCV
 find_package(OpenCV REQUIRED)
@@ -34,12 +35,22 @@ include_directories(
 # 可执行文件
 add_executable(${PROJECT_NAME} ${SRCS})
 
-# 链接库
+# 链接库 - 使用本地lib目录中的库（编译后复制）
 target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS}
-    ${RKNPU2_LIB}
+    ${RKNPU2_DST_LIB}
     pthread
 )
+
+# 创建lib目录并复制运行时库（与build目录同级）
+add_custom_target(copy_libs ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/lib
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+        ${RKNPU2_SRC_LIB}
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+    COMMENT "Copying runtime libraries to lib/"
+)
+add_dependencies(${PROJECT_NAME} copy_libs)
 
 # 安装
 install(TARGETS ${PROJECT_NAME} DESTINATION .)

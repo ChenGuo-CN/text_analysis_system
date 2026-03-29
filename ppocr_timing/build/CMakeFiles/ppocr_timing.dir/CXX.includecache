@@ -6,6 +6,20 @@
 
 #IncludeRegexTransform: 
 
+../../rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
+stdint.h
+-
+
+../include/common.h
+
+../include/file_utils.h
+
+../include/image_drawing.h
+common.h
+../include/common.h
+
+../include/image_utils.h
+common.h
 ../include/common.h
 
 /home/linaro/traffic_text_analysis_system/ppocr_timing/src/clipper.cc
@@ -119,20 +133,6 @@ common.h
 /home/linaro/traffic_text_analysis_system/ppocr_timing/src/common.h
 string
 -
-
-/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/rknpu2/include/rknn_api.h
-stdint.h
--
-
-/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/file_utils.h
-
-/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_drawing.h
-common.h
-/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/common.h
-
-/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/image_utils.h
-common.h
-/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/common.h
 
 /usr/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp

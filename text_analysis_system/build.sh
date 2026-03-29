@@ -24,8 +24,19 @@ if [ -d "$BUILD_DIR" ]; then
     rm -rf "$BUILD_DIR"
 fi
 
+# 创建lib目录（与build同级）
+LIB_DIR="lib"
+if [ -d "$LIB_DIR" ]; then
+    echo -e "${YELLOW}清理旧的lib目录...${NC}"
+    rm -rf "$LIB_DIR"
+fi
+
 echo -e "${YELLOW}创建构建目录...${NC}"
 mkdir -p "$BUILD_DIR"
+
+echo -e "${YELLOW}创建lib目录...${NC}"
+mkdir -p "$LIB_DIR"
+
 cd "$BUILD_DIR"
 
 # 运行CMake
@@ -43,7 +54,7 @@ if [ -f "text_analysis_system" ]; then
     # 复制可执行文件到项目根目录
     cp text_analysis_system ../
     
-    # 复制依赖库到输出目录（可选）
+    # 复制依赖库到lib目录
     echo -e "${YELLOW}复制依赖库...${NC}"
     
     # 查找RKNN和RKLLM库
@@ -59,15 +70,15 @@ if [ -f "text_analysis_system" ]; then
     fi
     
     if [ -f "$RKNN_LIB" ]; then
-        cp "$RKNN_LIB" ./
-        echo -e "${GREEN}已复制: librknnrt.so${NC}"
+        cp "$RKNN_LIB" ../lib/
+        echo -e "${GREEN}已复制: librknnrt.so -> lib/${NC}"
     else
         echo -e "${RED}警告: 未找到 librknnrt.so${NC}"
     fi
     
     if [ -f "$RKLLM_LIB" ]; then
-        cp "$RKLLM_LIB" ./
-        echo -e "${GREEN}已复制: librkllmrt.so${NC}"
+        cp "$RKLLM_LIB" ../lib/
+        echo -e "${GREEN}已复制: librkllmrt.so -> lib/${NC}"
     else
         echo -e "${RED}警告: 未找到 librkllmrt.so${NC}"
     fi
@@ -78,7 +89,8 @@ if [ -f "text_analysis_system" ]; then
     echo -e "${GREEN}========================================${NC}"
     echo ""
     echo "可执行文件: ./text_analysis_system"
-    echo "使用方法: ./text_analysis_system <图片路径或文件夹>"
+    echo "依赖库目录: ./lib/"
+    echo "使用方法: LD_LIBRARY_PATH=./lib ./text_analysis_system <图片路径或文件夹>"
     echo ""
 else
     echo -e "${RED}编译失败!${NC}"

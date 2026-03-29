@@ -534,6 +534,26 @@ vector
 atomic
 -
 
+/home/linaro/traffic_text_analysis_system/text_analysis_system/src/clipper.cc
+algorithm
+-
+cmath
+-
+cstdlib
+-
+cstring
+-
+functional
+-
+ostream
+-
+stdexcept
+-
+vector
+-
+clipper.h
+/home/linaro/traffic_text_analysis_system/text_analysis_system/src/clipper.h
+
 /home/linaro/traffic_text_analysis_system/text_analysis_system/src/config.cpp
 config.h
 /home/linaro/traffic_text_analysis_system/text_analysis_system/src/config.h

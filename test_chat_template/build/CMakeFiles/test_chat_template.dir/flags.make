@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/aarch64-linux-gnu-g++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/linaro/traffic_text_analysis_system/test_chat_template/../rknn-llm/rkllm-runtime/Linux/librkllm_api/include
+CXX_INCLUDES = -I/home/linaro/traffic_text_analysis_system/test_chat_template/include
 
 CXX_FLAGS =  -O3 -O3 -DNDEBUG -std=gnu++11
 

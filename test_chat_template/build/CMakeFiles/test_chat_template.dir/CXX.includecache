@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-../../rknn-llm/rkllm-runtime/Linux/librkllm_api/include/rkllm.h
+../include/rkllm.h
 cstdint
 -
 

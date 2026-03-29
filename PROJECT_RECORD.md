@@ -366,16 +366,19 @@ export RKLLM_LOG_LEVEL=1
 ## NPU核心绑定测试记录 (test_select_npu)
 
 **会话日期**: 2026-03-28  
-**目标**: 验证PPOCR检测和识别模型同时绑定到NPU Core 2的可行性，并优化数据集格式和验证逻辑
+**目标**: 验证PPOCR检测和识别模型同时绑定到NPU Core 2的可行性，优化数据集格式和验证逻辑，提升项目可移植性
 
 ### 1. 测试程序结构
 
 ```
 test_select_npu/
-├── CMakeLists.txt              # CMake构建配置
-├── run.sh                      # 运行脚本
-├── build/                      # 编译输出
+├── CMakeLists.txt              # CMake构建配置（使用相对路径）
+├── build.sh                    # 编译脚本（新增，一键编译）
+├── run.sh                      # 运行脚本（使用相对路径）
+├── build/                      # 编译输出（编译时创建）
 │   └── test_select_npu         # 可执行文件
+├── lib/                        # 运行时库（编译时自动创建，与build同级）
+│   └── librknnrt.so            # RKNN运行时库
 ├── include/                    # 头文件
 │   ├── common.h
 │   ├── file_utils.h
@@ -396,7 +399,107 @@ test_select_npu/
     └── ppocr_keys_v1.txt       # 中文字典
 ```
 
-### 2. 核心代码修改
+### 2. 可移植性改进
+
+#### 2.1 相对路径使用
+
+**CMakeLists.txt 修改:**
+```cmake
+# 使用相对路径引用rknn_model_zoo（基于项目根目录的父目录）
+set(RKNN_MODEL_ZOO_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../rknn_model_zoo)
+set(RKNPU2_INCLUDE ${RKNN_MODEL_ZOO_ROOT}/3rdparty/rknpu2/include)
+set(RKNPU2_SRC_LIB ${RKNN_MODEL_ZOO_ROOT}/3rdparty/rknpu2/Linux/aarch64/librknnrt.so)
+set(RKNPU2_DST_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/librknnrt.so)
+
+# 链接库 - 使用本地lib目录中的库（编译后复制）
+target_link_libraries(${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    ${RKNPU2_DST_LIB}
+    pthread
+)
+
+# 创建lib目录并复制运行时库（与build目录同级）
+add_custom_target(copy_libs ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/lib
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+        ${RKNPU2_SRC_LIB}
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+    COMMENT "Copying runtime libraries to lib/"
+)
+add_dependencies(${PROJECT_NAME} copy_libs)
+```
+
+**build.sh 编译脚本:**
+```bash
+#!/bin/bash
+
+# 获取脚本所在目录（项目根目录）
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# 创建build目录
+mkdir -p build
+cd build
+
+# 运行cmake和make
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j4
+
+# 返回项目根目录
+cd ..
+
+# lib目录和库文件会在cmake自定义目标中自动创建
+echo "Build completed!"
+echo "  build/test_select_npu    - Executable"
+echo "  lib/librknnrt.so         - Runtime library"
+```
+
+**main.cc 修改:**
+```cpp
+// 使用相对路径
+#define EXPECTED_TEXTS_FILE "../datasets/test.txt"
+#define DEFAULT_IMAGE_PATH "../datasets/test.jpg"
+
+// 默认图片路径使用相对路径
+if (argc == 1) {
+    image_path = (char*)DEFAULT_IMAGE_PATH;
+}
+```
+
+**run.sh 修改:**
+```bash
+#!/bin/bash
+
+# 获取脚本所在目录（项目根目录）
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# 设置库路径为本地lib目录
+export LD_LIBRARY_PATH=${SCRIPT_DIR}/lib:$LD_LIBRARY_PATH
+
+# 检查可执行文件和运行时库
+if [ ! -f "./build/test_select_npu" ]; then
+    echo "Error: Executable not found. Please run ./build.sh first."
+    exit 1
+fi
+
+if [ ! -f "./lib/librknnrt.so" ]; then
+    echo "Warning: Runtime library not found. Please run ./build.sh first."
+    exit 1
+fi
+
+# 运行程序
+./build/test_select_npu
+```
+
+#### 2.2 改进优势
+
+- **无需绝对路径**: 项目可以在任意目录下编译和运行
+- **自包含**: 运行时库存放在项目本地lib文件夹中
+- **易于部署**: 只需复制整个test_select_npu目录即可运行
+- **环境无关**: 不依赖特定的用户目录结构
+
+### 3. 核心代码修改
 
 #### init_ppocr_model函数（带NPU核心绑定）
 
@@ -421,7 +524,7 @@ init_ppocr_model(det_model_path, &sys_ctx.det_context, RKNN_NPU_CORE_2);
 init_ppocr_model(rec_model_path, &sys_ctx.rec_context, RKNN_NPU_CORE_2);
 ```
 
-### 3. 数据集格式优化
+### 4. 数据集格式优化
 
 #### 问题描述
 原始txt文件存在以下问题：
@@ -474,7 +577,7 @@ init_ppocr_model(rec_model_path, &sys_ctx.rec_context, RKNN_NPU_CORE_2);
 }
 ```
 
-### 4. 验证逻辑优化
+### 5. 验证逻辑优化
 
 #### 改进内容
 - 支持从txt文件加载多个预期文本（每行一个）
@@ -498,23 +601,49 @@ int load_expected_texts(const char* filepath, expected_texts_t* out) {
 }
 ```
 
-### 5. 编译步骤
+### 6. 编译步骤
+
+#### 方式一：使用 build.sh 脚本（推荐）
 
 ```bash
-cd /home/linaro/traffic_text_analysis_system/test_select_npu
+cd test_select_npu
+./build.sh
+```
+
+**脚本功能:**
+- 自动创建 `build/` 目录
+- 运行 cmake 和 make 编译
+- 自动创建 `lib/` 目录（与 build/ 同级）
+- 自动复制 `librknnrt.so` 到 lib/ 目录
+
+#### 方式二：手动编译
+
+```bash
+cd test_select_npu
 mkdir -p build && cd build
 cmake ..
 make -j4
 ```
 
-### 6. 运行命令
+**编译输出说明:**
+- 生成可执行文件 `build/test_select_npu`
+- 创建 `lib/` 目录并复制 `librknnrt.so`
+- lib/ 目录与 build/ 目录同级
+
+### 7. 运行命令
 
 ```bash
-cd /home/linaro/traffic_text_analysis_system/test_select_npu
+cd test_select_npu
 ./run.sh
 ```
 
-### 7. 运行结果
+**运行说明:**
+- run.sh 自动检测脚本所在目录，切换到项目根目录
+- 使用本地 `lib/` 目录中的运行时库
+- 默认加载 `../datasets/test.jpg`
+- 无需指定绝对路径，项目可在任意目录运行
+
+### 8. 运行结果
 
 #### 模型初始化输出
 
@@ -644,7 +773,7 @@ Result: 17/17 expected texts found (100.0%)
 Status: SUCCESS - All expected texts recognized!
 ```
 
-### 8. 结果分析
+### 9. 结果分析
 
 #### NPU核心绑定验证
 
@@ -666,7 +795,7 @@ Status: SUCCESS - All expected texts recognized!
 - 检测和识别模型在同一核心上串行执行
 - 无核心冲突或资源竞争错误
 
-### 9. 关键发现
+### 10. 关键发现
 
 1. **rknn_set_core_mask接口有效性**:
    - 成功将模型绑定到指定NPU核心
@@ -688,6 +817,11 @@ Status: SUCCESS - All expected texts recognized!
    - JSON格式避免UTF-8 BOM和换行符问题
    - 每行一个文本的格式便于解析和验证
    - 100%匹配率验证成功
+
+6. **可移植性改进效果**:
+   - 所有路径改为相对路径，项目可在任意位置运行
+   - 运行时库自动复制到本地lib目录，实现自包含
+   - 无需修改代码即可在不同环境中部署
 
 ***
 
@@ -740,22 +874,49 @@ int callback(RKLLMResult* result, void* userdata, LLMCallState state) {
 ### 3. 编译步骤
 
 ```bash
-cd /home/linaro/traffic_text_analysis_system/test_chat_template
+cd test_chat_template
 ./build.sh
 ```
 
 **编译输出**:
 
 - 可执行文件: `build/test_chat_template`
-- 库依赖: `librkllmrt.so`
+- 运行时库: `lib/librkllmrt.so`（自动复制）
+
+**编译脚本功能**:
+- 自动创建`lib`目录（与`build`同级）
+- 自动复制`librkllmrt.so`到本地lib目录
+- 使用相对路径配置RPATH，实现自包含部署
+- 所有路径采用相对路径，确保项目可移植性
+
+**目录结构**:
+```
+test_chat_template/
+├── CMakeLists.txt              # CMake构建配置
+├── build.sh                    # 编译脚本
+├── build/                      # 编译输出目录
+│   └── test_chat_template      # 可执行文件
+├── lib/                        # 运行时库目录（自动创建）
+│   └── librkllmrt.so           # 自动复制
+├── include/                    # 头文件目录
+│   └── rkllm.h                 # RKLLM API头文件
+└── src/                        # 源文件目录
+    └── main.cpp
+```
 
 ### 4. 运行命令
 
 ```bash
-cd /home/linaro/traffic_text_analysis_system/test_chat_template
-export LD_LIBRARY_PATH=/home/linaro/traffic_text_analysis_system/rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64:$LD_LIBRARY_PATH
+cd test_chat_template
+export LD_LIBRARY_PATH=./lib:$LD_LIBRARY_PATH
 ./build/test_chat_template /userdata/models/Qwen2.5-1.5B-Instruct_W8A8_RK3588_16k.rkllm 1024 2048
 ```
+
+**运行说明**:
+- 使用相对路径`./lib`加载运行时库
+- lib目录与build目录同级，便于管理
+- 所有路径采用相对路径，项目可在任意位置运行
+- 自包含设计，无需依赖系统库路径
 
 ### 5. 运行结果
 
@@ -862,11 +1023,40 @@ W rkllm: Calling rkllm_set_chat_template will disable the internal automatic cha
    - 需要确保自定义prompt格式完整有效
    - 不同模型可能需要不同的template格式
 
-### 8. 结论
+### 8. 可移植性改进
+
+#### 改进内容
+
+1. **自动复制运行时库**:
+   - 编译脚本自动创建`build/lib`目录
+   - 自动复制`librkllmrt.so`到本地目录
+   - 实现自包含部署，无需依赖系统库
+
+2. **相对路径配置**:
+   - CMake设置RPATH为`$ORIGIN/lib`
+   - 运行时使用相对路径`./lib`加载库
+   - 项目可在任意目录位置运行
+
+3. **部署优势**:
+   - 简化运行命令，无需指定长路径
+   - 便于项目迁移和分发
+   - 避免系统库版本冲突
+
+#### 目录结构（改进后）
+
+```
+build/
+├── test_chat_template      # 可执行文件
+└── lib/
+    └── librkllmrt.so       # 运行时库（自动复制）
+```
+
+### 9. 结论
 
 - **测试成功**: 自定义chat_template和system prompt功能正常工作
 - **配置方法**: 在`rkllm_init`之后、`rkllm_run`之前调用`rkllm_set_chat_template`
 - **应用场景**: 可用于定制模型角色、专业领域、回答风格等
+- **可移植性**: 通过相对路径和自包含设计，项目可在任意位置部署运行
 - **推荐做法**: 根据目标模型选择合适的template格式，确保prompt完整性
 
 ***
@@ -1075,13 +1265,107 @@ target_link_libraries(text_analysis_system ${OpenCV_LIBS} rknnrt rkllmrt pthread
 
 #### build.sh编译脚本
 
+**文件**: `text_analysis_system/build.sh`
+
 ```bash
 #!/bin/bash
-mkdir -p build && cd build
+# build.sh - 文本分析系统编译脚本
+
+set -e
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}========================================${NC}"
+echo -e "${GREEN}  文本分析系统编译脚本${NC}"
+echo -e "${GREEN}========================================${NC}"
+
+# 获取脚本所在目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# 创建构建目录
+BUILD_DIR="build"
+if [ -d "$BUILD_DIR" ]; then
+    echo -e "${YELLOW}清理旧的构建目录...${NC}"
+    rm -rf "$BUILD_DIR"
+fi
+
+echo -e "${YELLOW}创建构建目录...${NC}"
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
+
+# 运行CMake
+echo -e "${YELLOW}运行CMake...${NC}"
 cmake .. -DCMAKE_BUILD_TYPE=Release
+
+# 编译
+echo -e "${YELLOW}开始编译...${NC}"
 make -j$(nproc)
-cp text_analysis_system ../
+
+# 检查编译结果
+if [ -f "text_analysis_system" ]; then
+    echo -e "${GREEN}编译成功!${NC}"
+    
+    # 复制可执行文件到项目根目录
+    cp text_analysis_system ../
+    
+    # 创建lib目录（与build同级）并复制依赖库
+    echo -e "${YELLOW}创建lib目录并复制依赖库...${NC}"
+    mkdir -p ../lib
+
+    # 查找RKNN和RKLLM库（使用相对路径）
+    RKNN_LIB="../rknn_model_zoo/3rdparty/rknpu2/Linux/librknn_api/aarch64/lib/librknnrt.so"
+    RKLLM_LIB="../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64/librkllmrt.so"
+
+    # 如果找不到，尝试其他路径
+    if [ ! -f "$RKNN_LIB" ]; then
+        RKNN_LIB="/usr/lib/librknnrt.so"
+    fi
+    if [ ! -f "$RKLLM_LIB" ]; then
+        RKLLM_LIB="/usr/lib/librkllmrt.so"
+    fi
+
+    if [ -f "$RKNN_LIB" ]; then
+        cp "$RKNN_LIB" ../lib/
+        echo -e "${GREEN}已复制: librknnrt.so -> lib/${NC}"
+    else
+        echo -e "${RED}警告: 未找到 librknnrt.so${NC}"
+    fi
+
+    if [ -f "$RKLLM_LIB" ]; then
+        cp "$RKLLM_LIB" ../lib/
+        echo -e "${GREEN}已复制: librkllmrt.so -> lib/${NC}"
+    else
+        echo -e "${RED}警告: 未找到 librkllmrt.so${NC}"
+    fi
+
+    echo ""
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "${GREEN}  编译完成!${NC}"
+    echo -e "${GREEN}========================================${NC}"
+    echo ""
+    echo "可执行文件: ./text_analysis_system"
+    echo "库文件目录: ./lib/"
+    echo "使用方法:"
+    echo "  1. 设置库路径: export LD_LIBRARY_PATH=./lib:\$LD_LIBRARY_PATH"
+    echo "  2. 运行程序: ./text_analysis_system <图片路径或文件夹>"
+    echo ""
+else
+    echo -e "${RED}编译失败!${NC}"
+    exit 1
+fi
 ```
+
+**编译脚本功能**:
+- 自动创建build目录
+- 编译生成可执行文件
+- 自动创建lib目录并复制运行时库
+- 复制可执行文件到项目根目录
+- 使用相对路径，确保项目可移植性
 
 ### 4. 运行测试
 
@@ -1101,6 +1385,14 @@ cp text_analysis_system ../
 
 #### 运行命令
 
+**1. 设置运行时库路径**
+
+```bash
+export LD_LIBRARY_PATH=./lib:$LD_LIBRARY_PATH
+```
+
+**2. 运行程序**
+
 ```bash
 # 处理单张图片
 ./text_analysis_system /path/to/image.jpg
@@ -1110,7 +1402,16 @@ cp text_analysis_system ../
 
 # 使用自定义配置
 ./text_analysis_system /path/to/image.jpg --config my_config.json
+
+# 使用绝对路径运行示例
+./text_analysis_system /home/linaro/traffic_text_analysis_system/datasets/1.jpg
 ```
+
+**路径说明**:
+- 所有路径采用相对路径，便于项目移植
+- 运行时库自动复制到`lib/`目录（与build目录同级）
+- 可执行文件位于项目根目录
+- 无需手动指定绝对路径
 
 #### 预期输出
 
@@ -1415,12 +1716,10 @@ make -j4
 #### 5.2 运行命令
 
 ```bash
-export LD_LIBRARY_PATH=/home/linaro/traffic_text_analysis_system/rknn_model_zoo/install/rk3588_linux_aarch64/rknn_PPOCR-System_demo/lib:$LD_LIBRARY_PATH
-
+# 无需设置LD_LIBRARY_PATH，运行时库已复制到lib目录
 ./ppocr_timing \
     ../model/ppocrv4_det_i8.rknn \
     ../model/ppocrv4_rec_fp16.rknn \
-    ../../rknn_model_zoo/install/rk3588_linux_aarch64/rknn_PPOCR-System_demo/model/ppocr_keys_v1.txt \
     ../model/test.jpg
 ```
 
@@ -1671,7 +1970,35 @@ make -j4
 
 **结果**: 编译成功，无错误
 
-### 4. 预期输出
+### 4. 运行说明
+
+#### 4.1 设置运行时库路径
+
+```bash
+export LD_LIBRARY_PATH=./lib:$LD_LIBRARY_PATH
+```
+
+#### 4.2 运行程序
+
+```bash
+# 处理单张图片
+./text_analysis_system /path/to/image.jpg
+
+# 处理文件夹
+./text_analysis_system /path/to/images/
+
+# 使用自定义配置
+./text_analysis_system /path/to/image.jpg --config my_config.json
+```
+
+#### 4.3 路径说明
+
+- 所有路径采用相对路径，便于项目移植
+- 运行时库自动复制到`lib/`目录（与build目录同级）
+- 可执行文件位于项目根目录
+- 无需手动指定绝对路径
+
+### 5. 预期输出
 
 运行时将输出准确的耗时统计：
 ```
@@ -1680,7 +2007,7 @@ make -j4
 [OCREngine] OCR识别成功: image.jpg, 识别到 12 个文本, 总耗时: 412.34 ms
 ```
 
-### 5. 关键决策
+### 6. 关键决策
 
 1. **计时方法**: 使用`gettimeofday`实现微秒级精度，与ppocr_timing项目保持一致
 2. **统计粒度**: 
@@ -1689,7 +2016,7 @@ make -j4
 3. **数据流**: 通过结构体字段传递耗时数据，避免全局变量
 4. **向后兼容**: 新增字段不影响原有接口，保持兼容性
 
-### 6. 参考文档
+### 7. 参考文档
 
 - PPOCR耗时统计分析计划: `.trae/documents/PPOCR_Timing_Analysis_Plan.md`
 - ppocr_timing项目记录: `PROJECT_RECORD.md#L1270-1522`
@@ -1698,5 +2025,5 @@ make -j4
 ***
 
 **记录创建时间**: 2026-03-28  
-**最后更新**: 2026-03-29（添加PPOCR准确耗时统计功能集成记录）  
+**最后更新**: 2026-03-29（添加编译脚本优化与运行说明）  
 **记录维护**: 每次会话后更新

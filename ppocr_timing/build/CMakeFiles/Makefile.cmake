@@ -11,8 +11,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.18.4/CMakeCCompiler.cmake"
   "CMakeFiles/3.18.4/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.18.4/CMakeSystem.cmake"
-  "/home/linaro/traffic_text_analysis_system/rknn_model_zoo/3rdparty/CMakeLists.txt"
-  "/home/linaro/traffic_text_analysis_system/rknn_model_zoo/utils/CMakeLists.txt"
   "/usr/lib/aarch64-linux-gnu/cmake/opencv4/OpenCVConfig-version.cmake"
   "/usr/lib/aarch64-linux-gnu/cmake/opencv4/OpenCVConfig.cmake"
   "/usr/lib/aarch64-linux-gnu/cmake/opencv4/OpenCVModules-release.cmake"
@@ -126,15 +124,10 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/3.18.4/CMakeCCompiler.cmake"
   "CMakeFiles/3.18.4/CMakeCXXCompiler.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "3rdparty.out/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "utils.out/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/copy_libs.dir/DependInfo.cmake"
   "CMakeFiles/ppocr_timing.dir/DependInfo.cmake"
-  "utils.out/CMakeFiles/audioutils.dir/DependInfo.cmake"
-  "utils.out/CMakeFiles/imageutils.dir/DependInfo.cmake"
-  "utils.out/CMakeFiles/imagedrawing.dir/DependInfo.cmake"
-  "utils.out/CMakeFiles/fileutils.dir/DependInfo.cmake"
   )

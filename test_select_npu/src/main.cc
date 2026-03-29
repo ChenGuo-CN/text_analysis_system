@@ -10,7 +10,8 @@
 
 #define DET_MODEL_PATH "model/ppocrv4_det_i8.rknn"
 #define REC_MODEL_PATH "model/ppocrv4_rec_fp16.rknn"
-#define EXPECTED_TEXTS_FILE "/home/linaro/traffic_text_analysis_system/datasets/test.txt"
+#define EXPECTED_TEXTS_FILE "../datasets/test.txt"
+#define DEFAULT_IMAGE_PATH "../datasets/test.jpg"
 
 // DBNet后处理参数
 #define THRESHOLD 0.3
@@ -67,11 +68,12 @@ int load_expected_texts(const char* filepath, expected_texts_t* out) {
 }
 
 void print_usage(char* argv[]) {
-    printf("Usage: %s <image_path>\n", argv[0]);
+    printf("Usage: %s [image_path]\n", argv[0]);
     printf("   or: %s <det_model_path> <rec_model_path> <image_path>\n", argv[0]);
     printf("\nExample:\n");
-    printf("  %s /home/linaro/traffic_text_analysis_system/datasets/test.jpg\n", argv[0]);
-    printf("  %s model/ppocrv4_det_i8.rknn model/ppocrv4_rec_fp16.rknn test.jpg\n", argv[0]);
+    printf("  %s                          # Use default image: %s\n", argv[0], DEFAULT_IMAGE_PATH);
+    printf("  %s ../datasets/test.jpg     # Use specified image\n", argv[0]);
+    printf("  %s model/det.rknn model/rec.rknn ../datasets/test.jpg\n", argv[0]);
 }
 
 int main(int argc, char** argv) {
@@ -81,10 +83,15 @@ int main(int argc, char** argv) {
     char* image_path = NULL;
 
     // 解析命令行参数
-    if (argc == 2) {
-        // 使用默认模型路径
-        det_model_path = DET_MODEL_PATH;
-        rec_model_path = REC_MODEL_PATH;
+    if (argc == 1) {
+        // 使用默认路径
+        det_model_path = (char*)DET_MODEL_PATH;
+        rec_model_path = (char*)REC_MODEL_PATH;
+        image_path = (char*)DEFAULT_IMAGE_PATH;
+    } else if (argc == 2) {
+        // 使用默认模型路径，指定图片路径
+        det_model_path = (char*)DET_MODEL_PATH;
+        rec_model_path = (char*)REC_MODEL_PATH;
         image_path = argv[1];
     } else if (argc == 4) {
         // 自定义模型路径

@@ -10,18 +10,16 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 # 查找RKLLM库和头文件
-# 优先使用rknn-llm中的库
+# 优先使用项目自带的头文件
+set(RKLLM_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+# 查找库文件
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64/librkllmrt.so")
-    # 新的Linux runtime路径
     set(RKLLM_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64/librkllmrt.so")
-    set(RKLLM_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../rknn-llm/rkllm-runtime/Linux/librkllm_api/include")
 elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../rknn-llm/rkllm-runtime/arm64/librkllmrt.so")
-    # 旧的路径
     set(RKLLM_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../rknn-llm/rkllm-runtime/arm64/librkllmrt.so")
-    set(RKLLM_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../rknn-llm/rkllm-runtime/arm64")
 elseif(EXISTS "/usr/lib/librkllmrt.so")
     set(RKLLM_LIB_PATH "/usr/lib/librkllmrt.so")
-    set(RKLLM_INCLUDE_PATH "/usr/include")
 else()
     message(FATAL_ERROR "无法找到librkllmrt.so库文件")
 endif()
@@ -45,10 +43,10 @@ target_link_libraries(test_chat_template
     pthread
 )
 
-# 设置运行时库搜索路径
+# 设置运行时库搜索路径（相对路径，指向与build同级的lib目录）
 set_target_properties(test_chat_template PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
-    INSTALL_RPATH "$ORIGIN/lib"
+    INSTALL_RPATH "../lib"
 )
 
 # 安装目标
